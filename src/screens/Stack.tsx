@@ -3,8 +3,9 @@ import Profile from './Profile';
 import Modules from './Modules';
 import LearningUnit from './LearningUnit';
 import Roadmap from './Roadmap';
-import SignIn from './SignIn';
-import Login from './Login';
+import Register from './forms/Register';
+import Login from './forms/Login';
+import CreateProject from './forms/CreateProject';
 
 const Stack = createNativeStackNavigator();
 
@@ -16,6 +17,12 @@ function MyStack() {
         component={Roadmap}
         options={{ headerShown: false }}
       />
+      <Stack.Screen
+        name="CreateProject"
+        component={CreateProject}
+        options={{ headerTitle: '' }}
+      />
+
       <Stack.Screen
         name="LearningUnit"
         component={LearningUnit}
@@ -36,8 +43,8 @@ export function LoginStack() {
         options={{ headerShown: false }}
       />
       <Stack.Screen
-        name="SignIn"
-        component={SignIn}
+        name="Register"
+        component={Register}
         options={{
           headerTitle: ''
         }}

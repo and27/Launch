@@ -4,7 +4,6 @@ import { Ionicons } from '@expo/vector-icons';
 import Profile from './Profile';
 import Modules from './Modules';
 import MyStack, { LoginStack } from './Stack';
-import Login from './Login';
 import { AuthContext } from '../context/authContext';
 import { useContext } from 'react';
 

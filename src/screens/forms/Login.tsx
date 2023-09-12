@@ -10,11 +10,12 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Dimensions } from 'react-native';
-import { login } from '../utils/supabase';
+import { login } from '../../utils/supabase';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { COLORS } from '../constants/colors';
-import { AuthContext } from '../context/authContext';
-import { formStyles } from '../globalStyles/forms';
+import { COLORS } from '../../constants/colors';
+import { AuthContext } from '../../context/authContext';
+import { formStyles } from '../../globalStyles/forms';
+import { globalStyles } from '../../globalStyles/global';
 
 const windowWidth = Dimensions.get('window').width;
 
@@ -33,7 +34,7 @@ export default function Login() {
   const handleLogin = async () => {
     const { data } = await login();
     if (isFirstTime) {
-      navigation.navigate('SignIn' as never);
+      navigation.navigate('Register' as never);
       storeData(data?.session?.user?.id);
     } else if (data?.session) {
       setIsLoggedIn(true);
@@ -43,7 +44,7 @@ export default function Login() {
     <>
       <View style={styles.container}>
         <Image
-          source={require('../../assets/abstract/abstract5.jpg')}
+          source={require('../../../assets/abstract/abstract5.jpg')}
           style={styles.logo}
         />
         <View>
@@ -56,12 +57,24 @@ export default function Login() {
             secureTextEntry
           />
           <Pressable
-            style={styles.btn}
+            style={formStyles.btnPrimary}
             onPress={handleLogin}
             accessibilityLabel="Login button"
           >
-            <Text style={styles.btnText}>Ingresa</Text>
+            <Text style={formStyles.btnPrimaryText}>Ingresa</Text>
           </Pressable>
+          <Pressable
+            style={{ ...formStyles.btnSecondary, marginVertical: 8 }}
+            onPress={handleLogin}
+            accessibilityLabel="Google login button"
+          >
+            <Text style={formStyles.btnSecondaryText}>Google login</Text>
+          </Pressable>
+          <Button
+            title="Crear cuenta"
+            onPress={() => {}}
+            color={COLORS.primaryBlack}
+          />
           <Button
             title="Olvidé mi contraseña"
             onPress={() => {}}
@@ -77,10 +90,7 @@ const formGlobalStyles = formStyles;
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: COLORS.primaryWhite,
-    padding: 20,
-    flex: 1,
-    alignItems: 'center',
+    ...globalStyles.screenContainer,
     justifyContent: 'space-around'
   },
   logo: {
@@ -91,12 +101,6 @@ const styles = StyleSheet.create({
   input: {
     ...formGlobalStyles.input,
     width: windowWidth - 40,
-    marginBottom: 32
-  },
-  btn: {
-    ...formGlobalStyles.btn
-  },
-  btnText: {
-    ...formGlobalStyles.btnText
+    marginBottom: 24
   }
 });

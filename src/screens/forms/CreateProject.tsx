@@ -1,21 +1,14 @@
 import React, { useContext } from 'react';
-import {
-  View,
-  StyleSheet,
-  TextInput,
-  Button,
-  Text,
-  Pressable
-} from 'react-native';
+import { View, StyleSheet, TextInput, Text, Pressable } from 'react-native';
 import { Dimensions } from 'react-native';
-import { COLORS } from '../constants/colors';
-import { AuthContext } from '../context/authContext';
+import { AuthContext } from '../../context/authContext';
 import RNPickerSelect from 'react-native-picker-select';
-import { formStyles } from '../globalStyles/forms';
+import { formStyles } from '../../globalStyles/forms';
+import { globalStyles } from '../../globalStyles/global';
 
 const windowWidth = Dimensions.get('window').width;
 
-export default function SignIn() {
+export default function CreateProject() {
   const { setIsLoggedIn } = useContext(AuthContext);
 
   const handleSaveData = () => {
@@ -25,10 +18,11 @@ export default function SignIn() {
   return (
     <>
       <View style={styles.container}>
+        <Text style={styles.title}>¿Tienes una idea?</Text>
         <View>
-          <Text>Name</Text>
-          <TextInput style={styles.input} placeholder="Name" />
-          <Text style={styles.label}>Área favorita</Text>
+          <Text>Nombre del proyecto</Text>
+          <TextInput style={styles.input} placeholder="Nombre" />
+          <Text style={styles.label}>Área principal</Text>
           <RNPickerSelect
             onValueChange={value => console.log(value)}
             style={pickerStyles}
@@ -36,16 +30,6 @@ export default function SignIn() {
               { label: 'Educación', value: 'education' },
               { label: 'Medio Ambiente', value: 'ambient' },
               { label: 'Salud', value: 'salud' }
-            ]}
-          />
-          <Text style={styles.label}>Conocimientos de emprendimiento</Text>
-          <RNPickerSelect
-            onValueChange={value => console.log(value)}
-            style={pickerStyles}
-            items={[
-              { label: 'Alto', value: 'alto' },
-              { label: 'Medio', value: 'medio' },
-              { label: 'Bajo', value: 'bajo' }
             ]}
           />
           <Text style={styles.label}>Objetivo principal</Text>
@@ -71,9 +55,9 @@ export default function SignIn() {
           <Pressable
             style={styles.btn}
             onPress={handleSaveData}
-            accessibilityLabel="Sign in button"
+            accessibilityLabel="Create new project button"
           >
-            <Text style={styles.btnText}>Continuar</Text>
+            <Text style={styles.btnText}>Empezar</Text>
           </Pressable>
         </View>
       </View>
@@ -85,25 +69,24 @@ const formGlobalStyles = formStyles;
 
 const styles = StyleSheet.create({
   container: {
-    margin: 20,
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center'
+    ...globalStyles.screenContainer,
+    justifyContent: 'flex-start',
+    alignItems: 'flex-start'
   },
   title: {
-    fontSize: 18,
-    marginBottom: 8
+    ...globalStyles.title,
+    marginBottom: 40
   },
   input: {
     ...formGlobalStyles.input,
     width: windowWidth - 40
   },
   btn: {
-    ...formGlobalStyles.btn,
+    ...formGlobalStyles.btnPrimary,
     marginTop: 32
   },
   btnText: {
-    ...formGlobalStyles.btnText
+    ...formGlobalStyles.btnPrimaryText
   },
   label: {
     marginTop: 24
