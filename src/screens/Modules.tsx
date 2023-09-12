@@ -1,23 +1,45 @@
-import { Text, View, StyleSheet, SafeAreaView, FlatList } from 'react-native';
-import User from './Module';
+import { useState } from 'react';
+import {
+  Text,
+  View,
+  StyleSheet,
+  SafeAreaView,
+  FlatList,
+  Pressable
+} from 'react-native';
+import Module from './Module';
 const modules = require('../users.json');
 
 export default function Modules() {
+  const [currentFilter, setCurrentFilter] = useState('popular');
+  const filterNames = ['Popular', 'Todos', 'Iniciando', 'Lanzando'];
+  const handleFilter = filter => {
+    setCurrentFilter(filter);
+  };
+
   return (
     <>
       <SafeAreaView>
         <View style={styles.filters}>
-          <View style={styles.filterAll}>
-            <Text>All</Text>
-          </View>
-          <Text>Iniciando</Text>
-          <Text>Lanzando</Text>
-          <Text>Escalando</Text>
+          {filterNames.map((filter, index) => {
+            return (
+              <Pressable
+                key={index}
+                onPress={() => handleFilter(filter)}
+                style={
+                  currentFilter === filter
+                    ? { ...styles.filterBtn, ...styles.filterBtnSelected }
+                    : styles.filterBtn
+                }
+              >
+                <Text>{filter}</Text>
+              </Pressable>
+            );
+          })}
         </View>
         <FlatList
-          style={styles.usersList}
           data={modules}
-          renderItem={({ item }) => <User item={item} />}
+          renderItem={({ item }) => <Module item={item} />}
           keyExtractor={item => item.id}
         />
       </SafeAreaView>
@@ -35,10 +57,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignSelf: 'stretch'
   },
-
-  usersList: {
-    paddingHorizontal: 16
-  },
   filters: {
     display: 'flex',
     flexDirection: 'row',
@@ -47,9 +65,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 16
   },
-  filterAll: {
-    borderBottomColor: 'black',
-    borderBottomWidth: 1,
-    paddingHorizontal: 5
+  filterBtn: {
+    padding: 8,
+    borderRadius: 8
+  },
+  filterBtnSelected: {
+    backgroundColor: '#ddd'
   }
 });
