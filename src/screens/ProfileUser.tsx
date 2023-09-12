@@ -1,8 +1,8 @@
 import { Image, Text, View, StyleSheet, Button } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { COLORS } from '../colors';
+import { COLORS } from '../constants/colors';
 
-const img = require('../../assets/profilePhoto.jpg');
+const img = require('../../assets/abstract/abstract1.jpg');
 
 export default function ProfileUser({ item }) {
   const navigation = useNavigation();

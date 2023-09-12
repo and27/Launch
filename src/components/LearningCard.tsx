@@ -1,6 +1,6 @@
 import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { COLORS } from '../colors';
+import { COLORS } from '../constants/colors';
 
 const LearningCard = ({ title, description, step, isEven }) => {
   const navigation = useNavigation();

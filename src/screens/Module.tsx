@@ -1,6 +1,6 @@
 import { Text, View, StyleSheet, Pressable } from 'react-native';
 import { FontAwesome5 } from '@expo/vector-icons';
-import { COLORS } from '../colors';
+import { COLORS } from '../constants/colors';
 
 export default function User({ item }) {
   const handleModulePress = () => {};
@@ -22,8 +22,8 @@ export default function User({ item }) {
         </Text>
       </View>
       <View style={styles.coin}>
-        <FontAwesome5 name="coins" size={18} color={COLORS.primaryBlack} />
-        <Text style={styles.coinText}>500</Text>
+        {/* <FontAwesome5 name="coins" size={18} color={COLORS.primaryBlack} />
+        <Text style={styles.coinText}>500</Text> */}
       </View>
     </View>
   );
@@ -31,21 +31,24 @@ export default function User({ item }) {
 
 const styles = StyleSheet.create({
   listItem: {
-    marginBottom: 4,
+    backgroundColor: '#f7f7f7',
+    paddingHorizontal: 20,
+    marginHorizontal: 20,
     display: 'flex',
     flexDirection: 'row',
     paddingVertical: 20,
-    paddingHorizontal: 18,
     alignItems: 'center',
     gap: 20,
-    backgroundColor: '#fafafa',
+    marginBottom: 16,
     shadowColor: '#555',
-    shadowOffset: { width: 2, height: 2 },
-    shadowOpacity: 1,
+    shadowOffset: { width: 1, height: 1 },
+    shadowOpacity: 10,
     shadowRadius: 0,
-    elevation: 1
+    elevation: 1,
+    borderRadius: 4,
+    borderWidth: 1
   },
-  listItemWhite: { backgroundColor: COLORS.primaryWhite },
+  // listItemWhite: { backgroundColor: COLORS.primaryWhite },
   coin: {
     flexShrink: 0,
     alignSelf: 'flex-start',
