@@ -2,7 +2,7 @@ import React from 'react';
 import { View, StyleSheet, Text } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import LearningCard from '../components/LearningCard';
-import { COLORS } from '../colors';
+import { COLORS } from '../constants/colors';
 
 export default function Learning() {
   const learningPaths = [
@@ -125,6 +125,7 @@ export default function Learning() {
 
 const styles = StyleSheet.create({
   container2: {
+    marginTop: 48,
     paddingLeft: 16
   },
   module: {
