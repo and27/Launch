@@ -1,13 +1,27 @@
-import React from 'react';
-import { View, StyleSheet, TextInput, Button, Text } from 'react-native';
+import React, { useContext } from 'react';
+import {
+  View,
+  StyleSheet,
+  TextInput,
+  Button,
+  Text,
+  Pressable,
+  Image
+} from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import { Dimensions } from 'react-native';
-import { login } from '../supabase';
+import { login } from '../utils/supabase';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { COLORS } from '../colors';
+import { COLORS } from '../constants/colors';
+import { AuthContext } from '../context/authContext';
+import { formStyles } from '../globalStyles/forms';
 
 const windowWidth = Dimensions.get('window').width;
 
 export default function Login() {
+  const isFirstTime = true;
+  const navigation = useNavigation();
+  const { setIsLoggedIn } = useContext(AuthContext);
   const storeData = async value => {
     try {
       await AsyncStorage.setItem('user', value);
@@ -18,22 +32,40 @@ export default function Login() {
 
   const handleLogin = async () => {
     const { data } = await login();
-    if (data?.session) {
+    if (isFirstTime) {
+      navigation.navigate('SignIn' as never);
       storeData(data?.session?.user?.id);
+    } else if (data?.session) {
+      setIsLoggedIn(true);
     }
   };
   return (
     <>
-      <View style={styles.container2}>
+      <View style={styles.container}>
+        <Image
+          source={require('../../assets/abstract/abstract5.jpg')}
+          style={styles.logo}
+        />
         <View>
-          <Text>User</Text>
-          <TextInput style={styles.input} placeholder="Username" />
-          <Text>Password</Text>
-          <TextInput style={styles.input} placeholder="Password" />
-          <Button
+          <Text>Ingresa tu correo</Text>
+          <TextInput style={styles.input} placeholder="Email" />
+          <Text>Ingresa tu contraseña </Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Contraseña"
+            secureTextEntry
+          />
+          <Pressable
+            style={styles.btn}
             onPress={handleLogin}
-            title="Learn More"
-            accessibilityLabel="Learn more about this purple button"
+            accessibilityLabel="Login button"
+          >
+            <Text style={styles.btnText}>Ingresa</Text>
+          </Pressable>
+          <Button
+            title="Olvidé mi contraseña"
+            onPress={() => {}}
+            color={COLORS.primaryBlack}
           />
         </View>
       </View>
@@ -41,26 +73,30 @@ export default function Login() {
   );
 }
 
+const formGlobalStyles = formStyles;
+
 const styles = StyleSheet.create({
-  container2: {
-    margin: 20,
+  container: {
+    backgroundColor: COLORS.primaryWhite,
+    padding: 20,
     flex: 1,
     alignItems: 'center',
-    justifyContent: 'center'
+    justifyContent: 'space-around'
   },
-  title: {
-    fontSize: 18,
-    marginBottom: 8
+  logo: {
+    width: 100,
+    height: 100,
+    borderRadius: 200
   },
   input: {
-    height: 40,
-    alignSelf: 'stretch',
-    borderColor: '#bbb',
-    backgroundColor: COLORS.primaryWhite,
-    borderWidth: 1,
-    marginBottom: 8,
-    padding: 5,
-    borderRadius: 8,
-    width: windowWidth - 40
+    ...formGlobalStyles.input,
+    width: windowWidth - 40,
+    marginBottom: 32
+  },
+  btn: {
+    ...formGlobalStyles.btn
+  },
+  btnText: {
+    ...formGlobalStyles.btnText
   }
 });
