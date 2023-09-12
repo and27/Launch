@@ -2,6 +2,7 @@ import { StatusBar } from 'expo-status-bar';
 import Navigation from './src/screens/Tabs';
 import { useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { AuthProvider } from './src/context/authContext';
 
 export default function App() {
   const [isSignedIn, setIsSignedIn] = useState(false);
@@ -31,8 +32,10 @@ export default function App() {
 
   return (
     <>
-      <StatusBar style="dark" />
-      <Navigation isSignedIn={isSignedIn} />
+      <AuthProvider>
+        <StatusBar style="dark" />
+        <Navigation isSignedIn={isSignedIn} />
+      </AuthProvider>
     </>
   );
 }

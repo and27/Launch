@@ -3,21 +3,22 @@ import { NavigationContainer } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import Profile from './Profile';
 import Modules from './Modules';
-import MyStack from './Stack';
+import MyStack, { LoginStack } from './Stack';
 import Login from './Login';
+import { AuthContext } from '../context/authContext';
+import { useContext } from 'react';
 
 const Tab = createBottomTabNavigator();
 
 function MyTabs() {
   return (
-    <Tab.Navigator>
+    <Tab.Navigator screenOptions={{ headerShown: false }}>
       <Tab.Screen
         name="Launch"
         component={MyStack}
         options={{
           tabBarActiveTintColor: '#000',
-          tabBarLabel: 'Progreso',
-          headerShown: false,
+          tabBarLabel: 'Roadmap',
           tabBarIcon: ({ focused }) => (
             <Ionicons
               name="rocket-outline"
@@ -43,7 +44,7 @@ function MyTabs() {
         }}
       />
       <Tab.Screen
-        name="Módulos"
+        name="Biblioteca"
         component={Modules}
         options={{
           tabBarActiveTintColor: '#000',
@@ -60,10 +61,11 @@ function MyTabs() {
   );
 }
 
-export default function Navigation({ isSignedIn }) {
+export default function Navigation() {
+  const { isLoggedIn } = useContext(AuthContext);
   return (
     <NavigationContainer>
-      {isSignedIn ? <MyTabs /> : <Login />}
+      {isLoggedIn ? <MyTabs /> : <LoginStack />}
     </NavigationContainer>
   );
 }
