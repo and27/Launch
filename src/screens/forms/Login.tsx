@@ -20,6 +20,11 @@ import { globalStyles } from '../../globalStyles/global';
 const windowWidth = Dimensions.get('window').width;
 
 export default function Login() {
+  const [credentials, setCredentials] = React.useState<{
+    email?: string;
+    password?: string;
+  }>({});
+
   const isFirstTime = true;
   const navigation = useNavigation();
   const { setIsLoggedIn } = useContext(AuthContext);
@@ -31,14 +36,25 @@ export default function Login() {
     }
   };
 
-  const handleLogin = async () => {
-    const { data } = await login();
-    if (isFirstTime) {
-      navigation.navigate('Register' as never);
-      storeData(data?.session?.user?.id);
+  const handlePasswordLogin = async () => {
+    const { data, error } = await login({
+      email: credentials?.email,
+      password: credentials?.password
+    });
+    if (error) {
+      console.log(error);
     } else if (data?.session) {
       setIsLoggedIn(true);
+      storeData(data?.session?.user?.id);
     }
+  };
+
+  const handleGoogleLogin = () => {
+    // navigation.navigate('Register' as never);
+  };
+
+  const handleRegister = () => {
+    navigation.navigate('Register' as never);
   };
   return (
     <>
@@ -49,30 +65,39 @@ export default function Login() {
         />
         <View>
           <Text>Ingresa tu correo</Text>
-          <TextInput style={styles.input} placeholder="Email" />
+          <TextInput
+            style={styles.input}
+            placeholder="Email"
+            onChangeText={text =>
+              setCredentials({ ...credentials, email: text })
+            }
+          />
           <Text>Ingresa tu contraseña </Text>
           <TextInput
             style={styles.input}
             placeholder="Contraseña"
             secureTextEntry
+            onChangeText={text =>
+              setCredentials({ ...credentials, password: text })
+            }
           />
           <Pressable
             style={formStyles.btnPrimary}
-            onPress={handleLogin}
+            onPress={handlePasswordLogin}
             accessibilityLabel="Login button"
           >
             <Text style={formStyles.btnPrimaryText}>Ingresa</Text>
           </Pressable>
           <Pressable
             style={{ ...formStyles.btnSecondary, marginVertical: 8 }}
-            onPress={handleLogin}
+            onPress={handleGoogleLogin}
             accessibilityLabel="Google login button"
           >
             <Text style={formStyles.btnSecondaryText}>Google login</Text>
           </Pressable>
           <Button
             title="Crear cuenta"
-            onPress={() => {}}
+            onPress={handleRegister}
             color={COLORS.primaryBlack}
           />
           <Button
