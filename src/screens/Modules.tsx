@@ -8,46 +8,55 @@ import {
   Pressable
 } from 'react-native';
 import Module from './Module';
+import { COLORS } from '../constants/colors';
 const modules = require('../users.json');
 
 export default function Modules() {
-  const [currentFilter, setCurrentFilter] = useState('popular');
+  const [currentFilter, setCurrentFilter] = useState('Popular');
   const filterNames = ['Popular', 'Todos', 'Iniciando', 'Lanzando'];
+
   const handleFilter = filter => {
     setCurrentFilter(filter);
+  };
+
+  const getFilterStyle = (filter: string) => {
+    if (currentFilter === filter)
+      return { ...styles.filterBtn, ...styles.filterBtnSelected };
+    else return styles.filterBtn;
   };
 
   return (
     <>
       <SafeAreaView>
-        <View style={styles.filters}>
-          {filterNames.map((filter, index) => {
-            return (
-              <Pressable
-                key={index}
-                onPress={() => handleFilter(filter)}
-                style={
-                  currentFilter === filter
-                    ? { ...styles.filterBtn, ...styles.filterBtnSelected }
-                    : styles.filterBtn
-                }
-              >
-                <Text>{filter}</Text>
-              </Pressable>
-            );
-          })}
+        <View style={styles.container}>
+          <View style={styles.filters}>
+            {filterNames.map((filter, index) => {
+              return (
+                <Pressable
+                  key={index}
+                  onPress={() => handleFilter(filter)}
+                  style={getFilterStyle(filter)}
+                >
+                  <Text>{filter}</Text>
+                </Pressable>
+              );
+            })}
+          </View>
+          <FlatList
+            data={modules}
+            renderItem={({ item }) => <Module item={item} />}
+            keyExtractor={item => item.id}
+          />
         </View>
-        <FlatList
-          data={modules}
-          renderItem={({ item }) => <Module item={item} />}
-          keyExtractor={item => item.id}
-        />
       </SafeAreaView>
     </>
   );
 }
 
 const styles = StyleSheet.create({
+  container: {
+    backgroundColor: COLORS.primaryWhite
+  },
   title: {
     fontSize: 18,
     marginBottom: 8
@@ -70,6 +79,6 @@ const styles = StyleSheet.create({
     borderRadius: 8
   },
   filterBtnSelected: {
-    backgroundColor: '#ddd'
+    backgroundColor: COLORS.primaryBlack
   }
 });
