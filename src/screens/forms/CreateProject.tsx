@@ -1,55 +1,117 @@
 import React, { useContext } from 'react';
-import { View, StyleSheet, TextInput, Text, Pressable } from 'react-native';
+import {
+  ScrollView,
+  View,
+  StyleSheet,
+  TextInput,
+  Text,
+  Pressable
+} from 'react-native';
 import { Dimensions } from 'react-native';
-import { AuthContext } from '../../context/authContext';
 import RNPickerSelect from 'react-native-picker-select';
+import { useNavigation, ParamListBase } from '@react-navigation/native';
 import { formStyles } from '../../globalStyles/forms';
 import { globalStyles } from '../../globalStyles/global';
+import { saveProjectInfo } from '../../utils/supabase';
+import { Area, Objective, Resource } from '../../enums/projectEnums';
+import { StackNavigationProp } from '@react-navigation/stack';
 
 const windowWidth = Dimensions.get('window').width;
 
 export default function CreateProject() {
-  const { setIsLoggedIn } = useContext(AuthContext);
+  const [projectInfo, setProjectInfo] = React.useState<{
+    idea?: string;
+    name?: string;
+    area?: number;
+    objective?: number;
+    resources?: number;
+  }>({});
 
-  const handleSaveData = () => {
-    setIsLoggedIn(true);
+  const { navigate } = useNavigation<StackNavigationProp<ParamListBase>>();
+
+  const handleSaveData = async () => {
+    const dataToSend = {
+      project_description: projectInfo.idea,
+      project_name: projectInfo.name,
+      ...projectInfo
+    };
+    delete dataToSend.name;
+    delete dataToSend.idea;
+
+    const { data, error } = await saveProjectInfo(dataToSend);
+    if (error) {
+      console.log(error);
+    } else {
+      navigate('Roadmap', projectInfo);
+    }
   };
 
   return (
     <>
-      <View style={styles.container}>
+      <ScrollView contentContainerStyle={styles.container}>
         <Text style={styles.title}>¿Tienes una idea?</Text>
         <View>
-          <Text>Nombre del proyecto</Text>
-          <TextInput style={styles.input} placeholder="Nombre" />
+          <Text>Cuéntanos tu idea</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Idea"
+            onChangeText={idea => setProjectInfo({ ...projectInfo, idea })}
+          />
+          <Text style={styles.label}>Dale un nombre</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Nombre"
+            onChangeText={name => setProjectInfo({ ...projectInfo, name })}
+          />
           <Text style={styles.label}>Área principal</Text>
           <RNPickerSelect
-            onValueChange={value => console.log(value)}
+            onValueChange={area =>
+              setProjectInfo({
+                ...projectInfo,
+                area
+              })
+            }
             style={pickerStyles}
             items={[
-              { label: 'Educación', value: 'education' },
-              { label: 'Medio Ambiente', value: 'ambient' },
-              { label: 'Salud', value: 'salud' }
+              { label: 'Educación', value: Area.education },
+              { label: 'Medio Ambiente', value: Area.ambient },
+              { label: 'Salud', value: Area.salud }
             ]}
           />
           <Text style={styles.label}>Objetivo principal</Text>
           <RNPickerSelect
-            onValueChange={value => console.log(value)}
+            onValueChange={objective =>
+              setProjectInfo({
+                ...projectInfo,
+                objective
+              })
+            }
             style={pickerStyles}
             items={[
-              { label: 'Crecimiento rápido', value: 'crecimiento' },
-              { label: 'Impacto social', value: 'social' },
-              { label: 'Rentabilidad a largo plazo', value: 'rentabilidad' }
+              { label: 'Crecimiento rápido', value: Objective.crecimiento },
+              { label: 'Impacto social', value: Objective.social },
+              {
+                label: 'Rentabilidad a largo plazo',
+                value: Objective.rentabilidad
+              }
             ]}
           />
           <Text style={styles.label}>Recursos disponibles</Text>
           <RNPickerSelect
-            onValueChange={value => console.log(value)}
+            onValueChange={resources =>
+              setProjectInfo({
+                ...projectInfo,
+                resources
+              })
+            }
             style={pickerStyles}
             items={[
-              { label: 'Financiamiento propio', value: 'financiamiento' },
-              { label: 'Tiempo libre', value: 'tiempo' },
-              { label: 'Red de contactos', value: 'contactos' }
+              {
+                label: 'Financiamiento propio',
+                value: Resource.financiamiento
+              },
+              { label: 'Tiempo libre', value: Resource.tiempo },
+              { label: 'Red de contactos', value: Resource.contactos }
             ]}
           />
           <Pressable
@@ -60,7 +122,7 @@ export default function CreateProject() {
             <Text style={styles.btnText}>Empezar</Text>
           </Pressable>
         </View>
-      </View>
+      </ScrollView>
     </>
   );
 }

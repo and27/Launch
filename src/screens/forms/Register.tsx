@@ -3,10 +3,9 @@ import { View, StyleSheet, TextInput, Text, Pressable } from 'react-native';
 import { Dimensions } from 'react-native';
 import uuid from 'react-native-uuid';
 import { AuthContext } from '../../context/authContext';
-import RNPickerSelect from 'react-native-picker-select';
 import { formStyles } from '../../globalStyles/forms';
 import { globalStyles } from '../../globalStyles/global';
-import { saveUser } from '../../utils/supabase';
+import { signupWithPassword } from '../../utils/supabase';
 
 const windowWidth = Dimensions.get('window').width;
 
@@ -21,14 +20,15 @@ export default function Register() {
 
   const handleSaveData = async () => {
     const userid = uuid.v4();
-    const { error } = await saveUser({
+    const { error } = await signupWithPassword({
       ...user,
       userid: userid
     });
     if (error) {
       console.log(error);
+    } else {
+      setIsLoggedIn(true);
     }
-    setIsLoggedIn(true);
   };
 
   return (
@@ -36,12 +36,6 @@ export default function Register() {
       <View style={styles.container}>
         <Text style={styles.title}>Create your account</Text>
         <View>
-          <Text>Name</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Name"
-            onChangeText={text => setUser({ ...user, name: text })}
-          />
           <Text style={styles.label}>Correo</Text>
           <TextInput
             style={styles.input}
@@ -55,15 +49,12 @@ export default function Register() {
             secureTextEntry
             onChangeText={text => setUser({ ...user, password: text })}
           />
-          <Text style={styles.label}>Conocimientos de emprendimiento</Text>
-          <RNPickerSelect
-            onValueChange={value => console.log(value)}
-            style={pickerStyles}
-            items={[
-              { label: 'Alto', value: 'alto' },
-              { label: 'Medio', value: 'medio' },
-              { label: 'Bajo', value: 'bajo' }
-            ]}
+          <Text style={styles.label}>Repite tu contraseña</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Contraseña"
+            secureTextEntry
+            onChangeText={text => setUser({ ...user, password: text })}
           />
           <Pressable
             style={styles.btn}

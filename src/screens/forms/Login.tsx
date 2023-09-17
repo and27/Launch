@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Dimensions } from 'react-native';
-import { login } from '../../utils/supabase';
+import { login, loginWithGoogle } from '../../utils/supabase';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { COLORS } from '../../constants/colors';
 import { AuthContext } from '../../context/authContext';
@@ -25,7 +25,6 @@ export default function Login() {
     password?: string;
   }>({});
 
-  const isFirstTime = true;
   const navigation = useNavigation();
   const { setIsLoggedIn } = useContext(AuthContext);
   const storeData = async value => {
@@ -45,12 +44,16 @@ export default function Login() {
       console.log(error);
     } else if (data?.session) {
       setIsLoggedIn(true);
-      storeData(data?.session?.user?.id);
+      const userInfo = {
+        id: data?.session?.user?.id,
+        name: data?.session?.user?.email
+      };
+      storeData(JSON.stringify(userInfo));
     }
   };
 
-  const handleGoogleLogin = () => {
-    // navigation.navigate('Register' as never);
+  const handleGoogleLogin = async () => {
+    const { user, error } = await loginWithGoogle();
   };
 
   const handleRegister = () => {
