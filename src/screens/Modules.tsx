@@ -71,7 +71,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-around',
     gap: 20,
-    paddingHorizontal: 16,
+    paddingHorizontal: 24,
     paddingVertical: 16
   },
   filterBtn: {
@@ -79,6 +79,6 @@ const styles = StyleSheet.create({
     borderRadius: 8
   },
   filterBtnSelected: {
-    backgroundColor: COLORS.primaryBlack
+    backgroundColor: COLORS.lightGrey
   }
 });

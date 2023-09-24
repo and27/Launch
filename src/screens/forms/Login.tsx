@@ -6,7 +6,8 @@ import {
   Button,
   Text,
   Pressable,
-  Image
+  Image,
+  ScrollView
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Dimensions } from 'react-native';
@@ -74,103 +75,104 @@ export default function Login() {
   };
 
   return (
-    <>
-      <View style={styles.container}>
-        <Image
-          source={require('../../../assets/abstract/abstract5.jpg')}
-          style={styles.logo}
+    <ScrollView
+      automaticallyAdjustKeyboardInsets={true}
+      contentContainerStyle={styles.container}
+    >
+      <Image
+        source={require('../../../assets/abstract/abstract5.jpg')}
+        style={styles.logo}
+      />
+      <View>
+        <Text>Ingresa tu correo</Text>
+        <Controller
+          control={control}
+          name="email"
+          render={({
+            field: { onChange, onBlur, value },
+            fieldState: { error }
+          }) => (
+            <View style={styles.inputContainer}>
+              <TextInput
+                style={styles.input}
+                onBlur={onBlur}
+                placeholder="Email"
+                value={value}
+                onChangeText={onChange}
+              />
+              {errors.email && (
+                <Text style={styles.errorText}>{error.message}</Text>
+              )}
+            </View>
+          )}
+          rules={{
+            required: 'Ingresa tu correo',
+            pattern: {
+              value: /^\S+@\S+$/i,
+              message: 'Ingresa un correo válido'
+            }
+          }}
         />
-        <View>
-          <Text>Ingresa tu correo</Text>
-          <Controller
-            control={control}
-            name="email"
-            render={({
-              field: { onChange, onBlur, value },
-              fieldState: { error }
-            }) => (
-              <View style={styles.inputContainer}>
-                <TextInput
-                  style={styles.input}
-                  onBlur={onBlur}
-                  placeholder="Email"
-                  value={value}
-                  onChangeText={onChange}
-                />
-                {errors.email && (
-                  <Text style={styles.errorText}>{error.message}</Text>
-                )}
-              </View>
-            )}
-            rules={{
-              required: 'Ingresa tu correo',
-              pattern: {
-                value: /^\S+@\S+$/i,
-                message: 'Ingresa un correo válido'
-              }
-            }}
-          />
 
-          <Text>Ingresa tu contraseña </Text>
-          <Controller
-            control={control}
-            name="password"
-            render={({
-              field: { onChange, onBlur, value },
-              fieldState: { error }
-            }) => (
-              <View style={styles.inputContainer}>
-                <TextInput
-                  style={{
-                    ...styles.input,
-                    borderColor: error ? COLORS.error : COLORS.primaryBlack
-                  }}
-                  onBlur={onBlur}
-                  placeholder="Contraseña"
-                  value={value}
-                  onChangeText={onChange}
-                  secureTextEntry
-                />
-                {errors.password && (
-                  <Text style={styles.errorText}>{error.message}</Text>
-                )}
-              </View>
-            )}
-            rules={{
-              required: 'Ingresa tu contraseña',
-              minLength: {
-                value: 8,
-                message: 'La contraseña debe tener al menos 8 caracteres'
-              }
-            }}
-          />
-          <Pressable
-            style={formStyles.btnPrimary}
-            onPress={handleSubmit(onSubmit, onError)}
-            accessibilityLabel="Login button"
-          >
-            <Text style={formStyles.btnPrimaryText}>Ingresa</Text>
-          </Pressable>
-          <Pressable
-            style={{ ...formStyles.btnSecondary, marginVertical: 8 }}
-            onPress={() => {}}
-            accessibilityLabel="Google login button"
-          >
-            <Text style={formStyles.btnSecondaryText}>Google login</Text>
-          </Pressable>
-          <Button
-            title="Crear cuenta"
-            onPress={handleRegister}
-            color={COLORS.primaryBlack}
-          />
-          <Button
-            title="Olvidé mi contraseña"
-            onPress={() => {}}
-            color={COLORS.primaryBlack}
-          />
-        </View>
+        <Text>Ingresa tu contraseña </Text>
+        <Controller
+          control={control}
+          name="password"
+          render={({
+            field: { onChange, onBlur, value },
+            fieldState: { error }
+          }) => (
+            <View style={styles.inputContainer}>
+              <TextInput
+                style={{
+                  ...styles.input,
+                  borderColor: error ? COLORS.error : COLORS.primaryBlack
+                }}
+                onBlur={onBlur}
+                placeholder="Contraseña"
+                value={value}
+                onChangeText={onChange}
+                secureTextEntry
+              />
+              {errors.password && (
+                <Text style={styles.errorText}>{error.message}</Text>
+              )}
+            </View>
+          )}
+          rules={{
+            required: 'Ingresa tu contraseña',
+            minLength: {
+              value: 8,
+              message: 'La contraseña debe tener al menos 8 caracteres'
+            }
+          }}
+        />
+        <Pressable
+          style={formStyles.btnPrimary}
+          onPress={handleSubmit(onSubmit, onError)}
+          accessibilityLabel="Login button"
+        >
+          <Text style={formStyles.btnPrimaryText}>Ingresa</Text>
+        </Pressable>
+        <Pressable
+          style={{ ...formStyles.btnSecondary, marginVertical: 8 }}
+          onPress={() => {}}
+          accessibilityLabel="Google login button"
+        >
+          <Text style={formStyles.btnSecondaryText}>Google login</Text>
+        </Pressable>
+        <Button
+          title="Crear cuenta"
+          onPress={handleRegister}
+          color={COLORS.primaryBlack}
+        />
+        <Button
+          title="Olvidé mi contraseña"
+          onPress={() => {}}
+          color={COLORS.primaryBlack}
+        />
       </View>
-    </>
+    </ScrollView>
   );
 }
 
@@ -179,7 +181,8 @@ const formGlobalStyles = formStyles;
 const styles = StyleSheet.create({
   container: {
     ...globalStyles.screenContainer,
-    justifyContent: 'space-around'
+    justifyContent: 'space-around',
+    marginVertical: 64
   },
   logo: {
     width: 100,
