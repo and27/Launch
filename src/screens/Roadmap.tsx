@@ -1,7 +1,7 @@
 import React from 'react';
-import { useNavigation } from '@react-navigation/native';
 import { View, Text, Pressable, StyleSheet, Image } from 'react-native';
 import { COLORS } from '../constants/colors';
+import { formStyles } from '../globalStyles/forms';
 
 const roadmapSteps = [
   'La misión',
@@ -10,25 +10,44 @@ const roadmapSteps = [
   'La validación',
   'El costo inicial'
 ];
-const Roadmap = () => {
+const Roadmap = ({ navigation, route }) => {
   const img = require('../../assets/abstract/abstract5.jpg');
-  const navigation = useNavigation();
   const handleSelectSte = () => {
     navigation.navigate('LearningUnit' as never);
   };
+
+  const handleCreateProject = () => {
+    navigation.navigate('CreateProject' as never);
+  };
+
+  const currentProject = route?.params;
+
+  if (!currentProject)
+    return (
+      <View style={styles.initialContainer}>
+        <Pressable style={styles.btn} onPress={handleCreateProject}>
+          <Text style={formStyles.btnPrimaryText}>Crea un nuevo proyecto</Text>
+        </Pressable>
+        <Text>
+          Tu roadmap aparecerá en esta sección después de crear tu primera
+          proyecto.
+        </Text>
+      </View>
+    );
+
   return (
     <View style={styles.container}>
       <View style={styles.listItem}>
         <Image source={img} style={styles.userImg} />
         <View style={styles.userInfo}>
-          <Text style={styles.name}>Project P</Text>
+          <Text style={styles.name}>{currentProject.name}</Text>
           <Text style={styles.listItemSubtitle}>Educación</Text>
         </View>
       </View>
       {roadmapSteps.map((step, index) => (
         <Pressable style={styles.option} key={index} onPress={handleSelectSte}>
           <View style={styles.number}>
-            <Text style={styles.numberText}>{index + 1}</Text>
+            <Text>{index + 1}</Text>
           </View>
           <Text>{step}</Text>
         </Pressable>
@@ -38,6 +57,14 @@ const Roadmap = () => {
 };
 
 const styles = StyleSheet.create({
+  initialContainer: {
+    backgroundColor: '#fcfcfc',
+    padding: 20,
+    minHeight: '100%',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
   container: {
     backgroundColor: '#fcfcfc',
     padding: 20,
@@ -110,6 +137,11 @@ const styles = StyleSheet.create({
   level: {
     fontSize: 12,
     color: COLORS.primaryWhite
+  },
+  btn: {
+    ...formStyles.btnPrimary,
+    width: '100%',
+    marginBottom: 24
   }
 });
 export default Roadmap;
