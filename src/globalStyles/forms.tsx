@@ -36,5 +36,10 @@ export const formStyles = StyleSheet.create({
   btnSecondaryText: {
     color: COLORS.primaryBlack,
     fontSize: 18
+  },
+  errorText: {
+    color: COLORS.error,
+    fontSize: 12,
+    marginTop: 4
   }
 });

@@ -76,8 +76,8 @@ export default function Login() {
 
   return (
     <ScrollView
-      automaticallyAdjustKeyboardInsets={true}
       contentContainerStyle={styles.container}
+      automaticallyAdjustKeyboardInsets
     >
       <Image
         source={require('../../../assets/abstract/abstract5.jpg')}
@@ -96,12 +96,12 @@ export default function Login() {
               <TextInput
                 style={styles.input}
                 onBlur={onBlur}
-                placeholder="Email"
+                placeholder="Correo"
                 value={value}
                 onChangeText={onChange}
               />
               {errors.email && (
-                <Text style={styles.errorText}>{error.message}</Text>
+                <Text style={formStyles.errorText}>{error.message}</Text>
               )}
             </View>
           )}
@@ -135,7 +135,7 @@ export default function Login() {
                 secureTextEntry
               />
               {errors.password && (
-                <Text style={styles.errorText}>{error.message}</Text>
+                <Text style={formStyles.errorText}>{error.message}</Text>
               )}
             </View>
           )}
@@ -196,10 +196,5 @@ const styles = StyleSheet.create({
   input: {
     ...formGlobalStyles.input,
     width: windowWidth - 40
-  },
-  errorText: {
-    color: 'red',
-    fontSize: 12,
-    marginTop: 2
   }
 });

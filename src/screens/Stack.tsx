@@ -6,6 +6,7 @@ import Roadmap from './Roadmap';
 import Register from './forms/Register';
 import Login from './forms/Login';
 import CreateProject from './forms/CreateProject';
+import { COLORS } from '../constants/colors';
 
 const Stack = createNativeStackNavigator();
 
@@ -36,7 +37,11 @@ function MyStack() {
 
 export function LoginStack() {
   return (
-    <Stack.Navigator>
+    <Stack.Navigator
+      screenOptions={{
+        contentStyle: { backgroundColor: COLORS.primaryWhite }
+      }}
+    >
       <Stack.Screen
         name="Login"
         component={Login}
@@ -45,9 +50,7 @@ export function LoginStack() {
       <Stack.Screen
         name="Register"
         component={Register}
-        options={{
-          headerTitle: ''
-        }}
+        options={{ headerTitle: 'Crea tu cuenta' }}
       />
     </Stack.Navigator>
   );

@@ -1,71 +1,180 @@
 import React, { useContext } from 'react';
-import { View, StyleSheet, TextInput, Text, Pressable } from 'react-native';
+import {
+  View,
+  StyleSheet,
+  TextInput,
+  Text,
+  Pressable,
+  Image
+} from 'react-native';
 import { Dimensions } from 'react-native';
 import uuid from 'react-native-uuid';
 import { AuthContext } from '../../context/authContext';
 import { formStyles } from '../../globalStyles/forms';
 import { globalStyles } from '../../globalStyles/global';
 import { signupWithPassword } from '../../utils/supabase';
+import { Controller, SubmitErrorHandler, useForm } from 'react-hook-form';
+import { ScrollView } from 'react-native-gesture-handler';
 
 const windowWidth = Dimensions.get('window').width;
+const windowHeight = Dimensions.get('window').height;
+
+type RegisterFormValues = {
+  email: string;
+  password: string;
+};
 
 export default function Register() {
-  const [user, setUser] = React.useState<{
-    name?: string;
-    email?: string;
-    password?: string;
-  }>({});
-
   const { setIsLoggedIn } = useContext(AuthContext);
 
-  const handleSaveData = async () => {
+  const handleSaveData = async (registerInfo: RegisterFormValues) => {
     const userid = uuid.v4();
     const { error } = await signupWithPassword({
-      ...user,
+      ...registerInfo,
       userid: userid
     });
+
     if (error) {
       console.log(error);
     } else {
+      console.log('registered');
       setIsLoggedIn(true);
     }
   };
 
+  const {
+    handleSubmit,
+    control,
+    watch,
+    formState: { errors }
+  } = useForm();
+
+  const onSubmit = (formInfo: RegisterFormValues) => {
+    const user = {
+      email: formInfo.email,
+      password: formInfo.password
+    };
+
+    handleSaveData(user);
+  };
+
+  const onError: SubmitErrorHandler<RegisterFormValues> = (errors, e) => {
+    return console.error(errors);
+  };
+
   return (
-    <>
-      <View style={styles.container}>
-        <Text style={styles.title}>Create your account</Text>
-        <View>
-          <Text style={styles.label}>Correo</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Correo"
-            onChangeText={text => setUser({ ...user, email: text })}
-          />
-          <Text style={styles.label}>Contraseña</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Contraseña"
-            secureTextEntry
-            onChangeText={text => setUser({ ...user, password: text })}
-          />
-          <Text style={styles.label}>Repite tu contraseña</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Contraseña"
-            secureTextEntry
-            onChangeText={text => setUser({ ...user, password: text })}
-          />
-          <Pressable
-            style={styles.btn}
-            onPress={handleSaveData}
-            accessibilityLabel="Sign in button"
-          >
-            <Text style={styles.btnText}>Continuar</Text>
-          </Pressable>
-        </View>
+    <ScrollView
+      contentContainerStyle={styles.container}
+      automaticallyAdjustKeyboardInsets
+    >
+      <View style={styles.imageContainer}>
+        <Image
+          source={require('../../../assets/abstract/abstract7.jpg')}
+          style={styles.logo}
+        />
       </View>
-    </>
+      {/* <Text style={styles.title}>Create your account</Text> */}
+      <View>
+        <Text>Correo</Text>
+        <Controller
+          control={control}
+          name="email"
+          render={({
+            field: { onChange, onBlur, value },
+            fieldState: { error }
+          }) => (
+            <View style={styles.inputContainer}>
+              <TextInput
+                style={styles.input}
+                onBlur={onBlur}
+                placeholder="Correo"
+                value={value}
+                onChangeText={onChange}
+              />
+              {errors.email && (
+                <Text style={formStyles.errorText}>{error.message}</Text>
+              )}
+            </View>
+          )}
+          rules={{
+            required: 'Ingresa tu correo',
+            pattern: {
+              value: /^\S+@\S+$/i,
+              message: 'Ingresa un correo válido'
+            }
+          }}
+        />
+        <Text>Contraseña</Text>
+        <Controller
+          control={control}
+          name="password"
+          render={({
+            field: { onChange, onBlur, value },
+            fieldState: { error }
+          }) => (
+            <View style={styles.inputContainer}>
+              <TextInput
+                style={styles.input}
+                onBlur={onBlur}
+                placeholder="Contraseña"
+                secureTextEntry
+                value={value}
+                onChangeText={onChange}
+              />
+              {errors.password && (
+                <Text style={formStyles.errorText}>{error.message}</Text>
+              )}
+            </View>
+          )}
+          rules={{
+            required: 'Ingresa tu contraseña',
+            minLength: {
+              value: 8,
+              message: 'Debe contener mínimo 8 caracteres'
+            }
+          }}
+        />
+
+        <Text>Repite tu contraseña</Text>
+        <Controller
+          control={control}
+          name="passwordVerification"
+          render={({
+            field: { onChange, onBlur, value },
+            fieldState: { error }
+          }) => (
+            <View style={styles.inputContainer}>
+              <TextInput
+                style={styles.input}
+                onBlur={onBlur}
+                placeholder="Contraseña"
+                secureTextEntry
+                value={value}
+                onChangeText={onChange}
+              />
+              {errors.passwordVerification && (
+                <Text style={formStyles.errorText}>{error.message}</Text>
+              )}
+            </View>
+          )}
+          rules={{
+            required: true,
+            validate: (value: string) => {
+              if (watch('password') != value) {
+                return 'Las contraseñas no coinciden';
+              }
+            }
+          }}
+        />
+        <Pressable
+          style={styles.btn}
+          onPress={handleSubmit(onSubmit, onError)}
+          accessibilityLabel="Sign in button"
+        >
+          <Text style={styles.btnText}>Continuar</Text>
+        </Pressable>
+      </View>
+    </ScrollView>
   );
 }
 
@@ -74,26 +183,46 @@ const formGlobalStyles = formStyles;
 const styles = StyleSheet.create({
   container: {
     ...globalStyles.screenContainer,
-    justifyContent: 'flex-start',
-    alignItems: 'flex-start'
+    marginVertical: windowHeight / 9,
+    paddingTop: -windowHeight / 12
   },
+
   title: {
     ...globalStyles.title,
     marginBottom: 40
   },
+
+  inputContainer: {
+    marginBottom: 24,
+    minHeight: 48
+  },
+
   input: {
     ...formGlobalStyles.input,
     width: windowWidth - 40
   },
+
   btn: {
     ...formGlobalStyles.btnPrimary,
-    marginTop: 32
+    marginTop: 16
   },
+
   btnText: {
     ...formGlobalStyles.btnPrimaryText
   },
-  label: {
-    marginTop: 24
+
+  imageContainer: {
+    width: 80,
+    height: 80,
+    marginBottom: 24
+  },
+
+  logo: {
+    flex: 1,
+    width: undefined,
+    height: undefined,
+    resizeMode: 'cover',
+    borderRadius: 100
   }
 });
 
