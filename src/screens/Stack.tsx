@@ -7,12 +7,17 @@ import Register from './forms/Register';
 import Login from './forms/Login';
 import CreateProject from './forms/CreateProject';
 import { COLORS } from '../constants/colors';
+import UserInfo from './forms/UserInfo';
 
 const Stack = createNativeStackNavigator();
 
 function MyStack() {
   return (
-    <Stack.Navigator>
+    <Stack.Navigator
+      screenOptions={{
+        contentStyle: { backgroundColor: COLORS.primaryWhite }
+      }}
+    >
       <Stack.Screen
         name="Roadmap"
         component={Roadmap}
@@ -30,6 +35,11 @@ function MyStack() {
         options={{ headerTitle: '' }}
       />
       <Stack.Screen name="Profile" component={Profile} />
+      <Stack.Screen
+        name="UserInfo"
+        component={UserInfo}
+        options={{ headerTitle: 'Editar perfil' }}
+      />
       <Stack.Screen name="Modules" component={Modules} />
     </Stack.Navigator>
   );

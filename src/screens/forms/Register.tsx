@@ -225,16 +225,3 @@ const styles = StyleSheet.create({
     borderRadius: 100
   }
 });
-
-const pickerStyles = StyleSheet.create({
-  inputIOS: {
-    fontSize: 14,
-    paddingVertical: 8,
-    paddingHorizontal: 4,
-    borderBottomWidth: 1,
-    borderBottomColor: '#bbb',
-    borderRadius: 4,
-    color: 'black',
-    paddingRight: 30
-  }
-});
