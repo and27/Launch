@@ -25,6 +25,11 @@ export default function Modules() {
     else return styles.filterBtn;
   };
 
+  const getFilterTextStyle = (filter: string) => {
+    if (currentFilter === filter) return { color: COLORS.primaryWhite };
+    else return { color: COLORS.primaryBlack };
+  };
+
   return (
     <>
       <SafeAreaView>
@@ -37,7 +42,7 @@ export default function Modules() {
                   onPress={() => handleFilter(filter)}
                   style={getFilterStyle(filter)}
                 >
-                  <Text>{filter}</Text>
+                  <Text style={getFilterTextStyle(filter)}>{filter}</Text>
                 </Pressable>
               );
             })}
@@ -76,9 +81,10 @@ const styles = StyleSheet.create({
   },
   filterBtn: {
     padding: 8,
-    borderRadius: 8
+    borderRadius: 8,
+    backgroundColor: '#eee'
   },
   filterBtnSelected: {
-    backgroundColor: COLORS.lightGrey
+    backgroundColor: COLORS.primaryBlack
   }
 });
