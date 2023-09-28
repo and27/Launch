@@ -2,25 +2,38 @@ import React from 'react';
 import { View, Text, Pressable, StyleSheet, Image } from 'react-native';
 import { COLORS } from '../constants/colors';
 import { formStyles } from '../globalStyles/forms';
+import { IProject } from './forms/CreateProject';
+import { generateLearningPath } from '../utils/getLearningPath';
 
-const roadmapSteps = [
-  'La misión',
-  'La propuesta de valor',
-  'El prototipo',
-  'La validación',
-  'El costo inicial'
+const questionnaire = [
+  {
+    id: 1,
+    question: 'Tienes una idea',
+    answer: 'No'
+  },
+  {
+    id: 2,
+    question: '¿Tienes un mvp?',
+    answer: 'No'
+  },
+  {
+    id: 3,
+    question: '¿Has validado tu mvp?',
+    answer: 'No'
+  }
 ];
-const Roadmap = ({ navigation, route }) => {
+
+const LearningPath = ({ navigation, route }) => {
   const img = require('../../assets/abstract/abstract5.jpg');
-  const handleSelectSte = () => {
-    navigation.navigate('LearningUnit' as never);
+  const currentProject: IProject = route?.params;
+  const learningPath = generateLearningPath(questionnaire);
+  const handleSelectStep = step => {
+    navigation.navigate('LearningUnit', step);
   };
 
   const handleCreateProject = () => {
-    navigation.navigate('CreateProject' as never);
+    navigation.navigate('CreateProject');
   };
-
-  const currentProject = route?.params;
 
   if (!currentProject)
     return (
@@ -41,15 +54,19 @@ const Roadmap = ({ navigation, route }) => {
         <Image source={img} style={styles.userImg} />
         <View style={styles.userInfo}>
           <Text style={styles.name}>{currentProject.name}</Text>
-          <Text style={styles.listItemSubtitle}>Educación</Text>
+          <Text style={styles.listItemSubtitle}>{currentProject.area}</Text>
         </View>
       </View>
-      {roadmapSteps.map((step, index) => (
-        <Pressable style={styles.option} key={index} onPress={handleSelectSte}>
+      {learningPath?.map((step, index) => (
+        <Pressable
+          style={styles.option}
+          key={index}
+          onPress={() => handleSelectStep(step)}
+        >
           <View style={styles.number}>
             <Text>{index + 1}</Text>
           </View>
-          <Text>{step}</Text>
+          <Text>{step.title}</Text>
         </Pressable>
       ))}
     </View>
@@ -58,15 +75,16 @@ const Roadmap = ({ navigation, route }) => {
 
 const styles = StyleSheet.create({
   initialContainer: {
-    backgroundColor: '#fcfcfc',
+    backgroundColor: COLORS.primaryBlack,
     padding: 20,
     minHeight: '100%',
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center'
   },
+
   container: {
-    backgroundColor: '#fcfcfc',
+    backgroundColor: COLORS.primaryWhite,
     padding: 20,
     minHeight: '100%',
     paddingTop: 40,
@@ -75,8 +93,9 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
     gap: 12
   },
+
   option: {
-    shadowColor: '#555',
+    shadowColor: COLORS.darkGrey,
     width: '100%',
     display: 'flex',
     flexDirection: 'row',
@@ -88,10 +107,11 @@ const styles = StyleSheet.create({
     elevation: 1,
     borderRadius: 4,
     borderWidth: 1,
-    borderColor: '#555',
+    borderColor: COLORS.darkGrey,
     backgroundColor: COLORS.primaryWhite,
     padding: 12
   },
+
   number: {
     width: 24,
     height: 24,
@@ -114,9 +134,10 @@ const styles = StyleSheet.create({
     display: 'flex',
     alignItems: 'center'
   },
+
   name: { fontWeight: '600', marginTop: 4 },
   listItemSubtitle: {
-    color: '#777'
+    color: COLORS.darkGrey
   },
 
   userImg: {
@@ -124,6 +145,7 @@ const styles = StyleSheet.create({
     height: 75,
     borderRadius: 100
   },
+
   social: {
     marginLeft: 'auto',
     marginRight: 10,
@@ -134,14 +156,16 @@ const styles = StyleSheet.create({
     paddingVertical: 2,
     borderRadius: 5
   },
+
   level: {
     fontSize: 12,
     color: COLORS.primaryWhite
   },
+
   btn: {
     ...formStyles.btnPrimary,
     width: '100%',
     marginBottom: 24
   }
 });
-export default Roadmap;
+export default LearningPath;

@@ -2,7 +2,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Profile from './Profile';
 import Modules from './Modules';
 import LearningUnit from './LearningUnit';
-import Roadmap from './Roadmap';
+import LearningPath from './LearningPath';
 import Register from './forms/Register';
 import Login from './forms/Login';
 import CreateProject from './forms/CreateProject';
@@ -20,7 +20,7 @@ function MyStack() {
     >
       <Stack.Screen
         name="Roadmap"
-        component={Roadmap}
+        component={LearningPath}
         options={{ headerShown: false }}
       />
       <Stack.Screen
