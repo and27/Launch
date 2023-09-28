@@ -15,6 +15,8 @@ import { globalStyles } from '../../globalStyles/global';
 import { signupWithPassword } from '../../utils/supabase';
 import { Controller, SubmitErrorHandler, useForm } from 'react-hook-form';
 import { ScrollView } from 'react-native-gesture-handler';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { storeDataLocally } from '../../utils/asyncStore';
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
@@ -37,8 +39,8 @@ export default function Register() {
     if (error) {
       console.log(error);
     } else {
-      console.log('registered');
       setIsLoggedIn(true);
+      storeDataLocally({ key: 'user', value: userid });
     }
   };
 
@@ -73,7 +75,6 @@ export default function Register() {
           style={styles.logo}
         />
       </View>
-      {/* <Text style={styles.title}>Create your account</Text> */}
       <View>
         <Text>Correo</Text>
         <Controller
@@ -185,11 +186,6 @@ const styles = StyleSheet.create({
     ...globalStyles.screenContainer,
     marginVertical: windowHeight / 9,
     paddingTop: -windowHeight / 12
-  },
-
-  title: {
-    ...globalStyles.title,
-    marginBottom: 40
   },
 
   inputContainer: {

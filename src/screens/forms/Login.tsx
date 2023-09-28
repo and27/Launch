@@ -12,12 +12,12 @@ import {
 import { useNavigation } from '@react-navigation/native';
 import { Dimensions } from 'react-native';
 import { login } from '../../utils/supabase';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { COLORS } from '../../constants/colors';
 import { AuthContext } from '../../context/authContext';
 import { formStyles } from '../../globalStyles/forms';
 import { globalStyles } from '../../globalStyles/global';
 import { useForm, Controller, SubmitErrorHandler } from 'react-hook-form';
+import { storeDataLocally } from '../../utils/asyncStore';
 
 const windowWidth = Dimensions.get('window').width;
 type FormValues = {
@@ -28,14 +28,6 @@ type FormValues = {
 export default function Login() {
   const navigation = useNavigation();
   const { setIsLoggedIn } = useContext(AuthContext);
-
-  const storeDataLocally = async value => {
-    try {
-      await AsyncStorage.setItem('user', value);
-    } catch (e) {
-      console.log('error');
-    }
-  };
 
   const {
     handleSubmit,
@@ -66,7 +58,8 @@ export default function Login() {
       id: data?.session?.user?.id,
       name: data?.session?.user?.email
     };
-    storeDataLocally(JSON.stringify(userInfo));
+    const parsedUserInfo = JSON.stringify(userInfo);
+    storeDataLocally({ key: 'user', value: parsedUserInfo });
     setIsLoggedIn(true);
   };
 
