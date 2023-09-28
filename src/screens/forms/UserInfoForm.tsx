@@ -1,24 +1,48 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, TextInput, Text, Pressable } from 'react-native';
 import { Dimensions } from 'react-native';
-import uuid from 'react-native-uuid';
+import { useNavigation } from '@react-navigation/native';
 import RNPickerSelect from 'react-native-picker-select';
+import { Ionicons } from '@expo/vector-icons';
 import { formStyles } from '../../globalStyles/forms';
 import { globalStyles } from '../../globalStyles/global';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { getUserInfoFromId, saveUser, updateUser } from '../../utils/supabase';
+import { COLORS } from '../../constants/colors';
 
 const windowWidth = Dimensions.get('window').width;
 
-export default function UserInfo() {
+export default function UserInfoForm() {
+  const navigation = useNavigation();
+  const [isUpdated, setIsUpdated] = useState(false);
   const [user, setUser] = React.useState<{
     name?: string;
-    email?: string;
-    password?: string;
+    country?: string;
   }>({});
 
+  const handleRedirectToProfile = userid => {
+    setIsUpdated(true);
+    AsyncStorage.setItem('user', JSON.stringify({ ...user, userid: userid }));
+    setTimeout(
+      () =>
+        navigation.reset({ index: 0, routes: [{ name: 'Profile' as never }] }),
+      1000
+    );
+  };
   const handleSaveData = async () => {
-    const userid = uuid.v4();
+    const storedUser = await AsyncStorage.getItem('user');
+    if (!storedUser) return console.log('No user stored');
 
-    //todo: guardar info de usuario en supabase
+    const userid = JSON.parse(storedUser).id;
+    const { data: existingUser } = await getUserInfoFromId(userid);
+
+    if (existingUser) {
+      const { error } = await updateUser({ id: userid, ...user });
+      if (!error) handleRedirectToProfile(userid);
+    } else {
+      const { error } = await saveUser({ userid: userid, ...user });
+      if (!error) handleRedirectToProfile(userid);
+    }
   };
 
   return (
@@ -36,10 +60,10 @@ export default function UserInfo() {
           <TextInput
             style={styles.input}
             placeholder="País"
-            onChangeText={text => setUser({ ...user, name: text })}
+            onChangeText={text => setUser({ ...user, country: text })}
           />
           <Text style={styles.label}>Correo</Text>
-          <TextInput
+          {/* <TextInput
             style={styles.input}
             placeholder="Correo"
             onChangeText={text => setUser({ ...user, email: text })}
@@ -54,13 +78,20 @@ export default function UserInfo() {
               { label: 'Medio', value: 'medio' },
               { label: 'Bajo', value: 'bajo' }
             ]}
-          />
+          /> */}
           <Pressable
             style={styles.btn}
             onPress={handleSaveData}
             accessibilityLabel="Sign in button"
           >
-            <Text style={styles.btnText}>Guardar</Text>
+            <Text style={styles.btnText}>{isUpdated ? '' : 'Guardar'}</Text>
+            {isUpdated && (
+              <Ionicons
+                name="checkmark-circle-sharp"
+                size={24}
+                color={COLORS.primaryWhite}
+              />
+            )}
           </Pressable>
         </View>
       </View>
@@ -86,7 +117,10 @@ const styles = StyleSheet.create({
   },
   btn: {
     ...formGlobalStyles.btnPrimary,
-    marginTop: 32
+    marginTop: 32,
+    display: 'flex',
+    flexDirection: 'row',
+    gap: 16
   },
   btnText: {
     ...formGlobalStyles.btnPrimaryText

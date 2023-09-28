@@ -1,13 +1,12 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Profile from './Profile';
-import Modules from './Modules';
 import LearningUnit from './LearningUnit';
 import LearningPath from './LearningPath';
 import Register from './forms/Register';
 import Login from './forms/Login';
 import CreateProject from './forms/CreateProject';
 import { COLORS } from '../constants/colors';
-import UserInfo from './forms/UserInfo';
+import UserInfoForm from './forms/UserInfoForm';
 
 const Stack = createNativeStackNavigator();
 
@@ -34,13 +33,27 @@ function MyStack() {
         component={LearningUnit}
         options={{ headerTitle: '' }}
       />
-      <Stack.Screen name="Profile" component={Profile} />
+    </Stack.Navigator>
+  );
+}
+
+export function ProfileStack() {
+  return (
+    <Stack.Navigator
+      screenOptions={{
+        contentStyle: { backgroundColor: COLORS.primaryWhite }
+      }}
+    >
+      <Stack.Screen
+        name="Profile"
+        component={Profile}
+        options={{ headerShown: false }}
+      />
       <Stack.Screen
         name="UserInfo"
-        component={UserInfo}
+        component={UserInfoForm}
         options={{ headerTitle: 'Editar perfil' }}
       />
-      <Stack.Screen name="Modules" component={Modules} />
     </Stack.Navigator>
   );
 }

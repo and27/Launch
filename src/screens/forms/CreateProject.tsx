@@ -20,18 +20,18 @@ import { Area, Objective, Resource } from '../../enums/projectEnums';
 import { COLORS } from '../../constants/colors';
 
 const windowWidth = Dimensions.get('window').width;
-type project = {
+export interface IProject {
   idea: string;
   name: string;
   area: number;
   objective: number;
   resources: number;
-};
+}
 
 export default function CreateProject() {
   const { navigate } = useNavigation<StackNavigationProp<ParamListBase>>();
 
-  const handleSaveData = async (projectData: project) => {
+  const handleSaveData = async (projectData: IProject) => {
     const dataToSend = {
       project_description: projectData.idea,
       project_name: projectData.name,
@@ -250,38 +250,46 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     flex: 0
   },
+
   title: {
     ...globalStyles.title,
     marginBottom: 40
   },
+
   inputContainer: {
     marginBottom: 24,
     minHeight: 48
   },
+
   input: {
     ...formGlobalStyles.input,
     width: windowWidth - 40
   },
+
   inputTextArea: {
     ...formGlobalStyles.input,
     width: windowWidth - 40,
     height: 48,
     textAlignVertical: 'top'
   },
+
   errorText: {
     color: COLORS.error,
     fontSize: 12,
     marginTop: 2
   },
+
   btn: {
     ...formGlobalStyles.btnPrimary,
     width: windowWidth - 40,
     marginTop: 24,
     marginBottom: 16
   },
+
   btnText: {
     ...formGlobalStyles.btnPrimaryText
   },
+
   confirmationContainer: {
     display: 'flex',
     flexDirection: 'row',
