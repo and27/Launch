@@ -7,11 +7,13 @@ import {
   FlatList,
   Pressable
 } from 'react-native';
-import Module from './Module';
+import LibraryCard from '../components/LibraryCard';
 import { COLORS } from '../constants/colors';
+import SPACING from '../constants/spacing';
+import TYPOGRAPHY from '../constants/typography';
 const modules = require('../users.json');
 
-export default function Modules() {
+export default function Libary() {
   const [currentFilter, setCurrentFilter] = useState('Popular');
   const filterNames = ['Popular', 'Todos', 'Iniciando', 'Lanzando'];
 
@@ -26,14 +28,16 @@ export default function Modules() {
   };
 
   const getFilterTextStyle = (filter: string) => {
-    if (currentFilter === filter) return { color: COLORS.primaryWhite };
-    else return { color: COLORS.primaryBlack };
+    if (currentFilter === filter)
+      return { color: COLORS.primaryWhite, fontSize: TYPOGRAPHY.baseText };
+    else return { color: COLORS.primaryBlack, fontSize: TYPOGRAPHY.baseText };
   };
 
   return (
     <>
       <SafeAreaView>
         <View style={styles.container}>
+          <Text style={styles.title}>Biblioteca</Text>
           <View style={styles.filters}>
             {filterNames.map((filter, index) => {
               return (
@@ -48,8 +52,9 @@ export default function Modules() {
             })}
           </View>
           <FlatList
+            style={{ paddingBottom: SPACING.xlarge }}
             data={modules}
-            renderItem={({ item }) => <Module item={item} />}
+            renderItem={({ item }) => <LibraryCard item={item} />}
             keyExtractor={item => item.id}
           />
         </View>
@@ -60,30 +65,38 @@ export default function Modules() {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: COLORS.primaryWhite
+    backgroundColor: COLORS.primaryWhite,
+    paddingHorizontal: SPACING.medium,
+    paddingVertical: SPACING.medium,
+    height: '100%'
   },
+
   title: {
-    fontSize: 18,
-    marginBottom: 8
+    fontSize: TYPOGRAPHY.extraLargeTitle,
+    marginBottom: SPACING.large,
+    color: COLORS.primaryBlack
   },
+
   menu: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignSelf: 'stretch'
   },
+
   filters: {
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'space-around',
     gap: 20,
-    paddingHorizontal: 24,
-    paddingVertical: 16
+    marginBottom: SPACING.medium
   },
+
   filterBtn: {
     padding: 8,
     borderRadius: 8,
-    backgroundColor: '#eee'
+    backgroundColor: COLORS.lightGrey
   },
+
   filterBtnSelected: {
     backgroundColor: COLORS.primaryBlack
   }

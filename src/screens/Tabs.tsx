@@ -1,8 +1,7 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
-import Profile from './Profile';
-import Modules from './Modules';
+import Libary from './Library';
 import MyStack, { LoginStack, ProfileStack } from './Stack';
 import { AuthContext } from '../context/authContext';
 import { useContext } from 'react';
@@ -44,7 +43,7 @@ function MyTabs() {
       />
       <Tab.Screen
         name="Biblioteca"
-        component={Modules}
+        component={Libary}
         options={{
           tabBarActiveTintColor: '#000',
           tabBarIcon: ({ focused }) => (
