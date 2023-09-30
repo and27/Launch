@@ -4,6 +4,6 @@ export const storeDataLocally = async ({ key, value }) => {
   try {
     await AsyncStorage.setItem(key, value);
   } catch (e) {
-    console.log(e);
+    console.error(e);
   }
 };

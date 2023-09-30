@@ -5,7 +5,8 @@ import {
   StyleSheet,
   TextInput,
   Text,
-  Pressable
+  Pressable,
+  SafeAreaView
 } from 'react-native';
 import { Dimensions } from 'react-native';
 import RNPickerSelect from 'react-native-picker-select';
@@ -18,6 +19,7 @@ import { globalStyles } from '../../globalStyles/global';
 import { saveProjectInfo } from '../../utils/supabase';
 import { Area, Objective, Resource } from '../../enums/projectEnums';
 import { COLORS } from '../../constants/colors';
+import SPACING from '../../constants/spacing';
 
 const windowWidth = Dimensions.get('window').width;
 export interface IProject {
@@ -41,6 +43,7 @@ export default function CreateProject() {
     delete dataToSend.idea;
 
     const { error } = await saveProjectInfo(dataToSend);
+
     if (error) {
       console.log(error);
     } else {
@@ -57,11 +60,11 @@ export default function CreateProject() {
     formState: { errors }
   } = useForm();
 
-  const onSubmit = (projectData: project) => {
+  const onSubmit = (projectData: IProject) => {
     handleSaveData(projectData);
   };
 
-  const onError: SubmitErrorHandler<project> = (errors, e) => {
+  const onError: SubmitErrorHandler<IProject> = (errors, e) => {
     return console.error(errors);
   };
 
@@ -77,7 +80,7 @@ export default function CreateProject() {
     );
 
   return (
-    <View style={{ flex: 1 }}>
+    <SafeAreaView style={{ flex: 1 }}>
       <ScrollView
         contentContainerStyle={styles.container}
         ref={scrollViewRef}
@@ -86,8 +89,6 @@ export default function CreateProject() {
           (scrollViewRef.current as any).scrollToEnd({ animated: true });
         }}
       >
-        <Text style={styles.title}>¿Tienes una idea?</Text>
-
         <Text>Cuéntanos tu idea</Text>
         <Controller
           control={control}
@@ -100,7 +101,7 @@ export default function CreateProject() {
               <TextInput
                 style={styles.inputTextArea}
                 onBlur={onBlur}
-                placeholder="I want to create ..."
+                placeholder="Voy a crear ..."
                 value={value}
                 onChangeText={onChange}
                 multiline={true}
@@ -237,7 +238,7 @@ export default function CreateProject() {
           <Text style={styles.btnText}>Empezar</Text>
         </Pressable>
       </ScrollView>
-    </View>
+    </SafeAreaView>
   );
 }
 
@@ -248,6 +249,7 @@ const styles = StyleSheet.create({
     ...globalStyles.screenContainer,
     justifyContent: 'flex-start',
     alignItems: 'flex-start',
+    paddingVertical: SPACING.large,
     flex: 0
   },
 
@@ -282,8 +284,7 @@ const styles = StyleSheet.create({
   btn: {
     ...formGlobalStyles.btnPrimary,
     width: windowWidth - 40,
-    marginTop: 24,
-    marginBottom: 16
+    marginTop: 24
   },
 
   btnText: {

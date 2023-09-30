@@ -15,7 +15,6 @@ import { globalStyles } from '../../globalStyles/global';
 import { signupWithPassword } from '../../utils/supabase';
 import { Controller, SubmitErrorHandler, useForm } from 'react-hook-form';
 import { ScrollView } from 'react-native-gesture-handler';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { storeDataLocally } from '../../utils/asyncStore';
 
 const windowWidth = Dimensions.get('window').width;
