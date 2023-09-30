@@ -17,7 +17,7 @@ function MyTabs() {
         component={MyStack}
         options={{
           tabBarActiveTintColor: '#000',
-          tabBarLabel: 'Roadmap',
+          tabBarLabel: 'Ruta',
           tabBarIcon: ({ focused }) => (
             <Ionicons
               name="rocket-outline"

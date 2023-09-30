@@ -14,6 +14,9 @@ function MyStack() {
   return (
     <Stack.Navigator
       screenOptions={{
+        headerStyle: {
+          backgroundColor: COLORS.primaryWhite
+        },
         contentStyle: { backgroundColor: COLORS.primaryWhite }
       }}
     >
@@ -25,9 +28,8 @@ function MyStack() {
       <Stack.Screen
         name="CreateProject"
         component={CreateProject}
-        options={{ headerTitle: '' }}
+        options={{ headerTitle: 'Nuevo Proyecto' }}
       />
-
       <Stack.Screen
         name="LearningUnit"
         component={LearningUnit}
@@ -41,6 +43,9 @@ export function ProfileStack() {
   return (
     <Stack.Navigator
       screenOptions={{
+        headerStyle: {
+          backgroundColor: COLORS.primaryWhite
+        },
         contentStyle: { backgroundColor: COLORS.primaryWhite }
       }}
     >
@@ -62,6 +67,9 @@ export function LoginStack() {
   return (
     <Stack.Navigator
       screenOptions={{
+        headerStyle: {
+          backgroundColor: COLORS.primaryWhite
+        },
         contentStyle: { backgroundColor: COLORS.primaryWhite }
       }}
     >
