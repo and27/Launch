@@ -1,6 +1,14 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { Text, View, StyleSheet, Button, Image, Pressable } from 'react-native';
-import ProfileUser from './ProfileUser';
+import {
+  Text,
+  View,
+  StyleSheet,
+  Button,
+  Image,
+  Pressable,
+  Dimensions,
+  SafeAreaView
+} from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
@@ -8,6 +16,11 @@ import { Ionicons } from '@expo/vector-icons';
 import { getUserInfoFromId } from '../utils/supabase';
 import { COLORS } from '../constants/colors';
 import { AuthContext } from '../context/authContext';
+import TYPOGRAPHY from '../constants/typography';
+import SPACING from '../constants/spacing';
+import { globalStyles } from '../globalStyles/global';
+import UserProfileInfo from '../components/UserProfileInfo';
+import { storeDataLocally } from '../utils/asyncStore';
 
 const img = require('../../assets/abstract/abstract7.jpg');
 
@@ -30,15 +43,15 @@ const UserSection: React.FC<IUserSectionProps> = ({
 
   return (
     <View style={styles.section}>
-      <Text>{title}</Text>
-      <View style={styles.userSectionContainer}>
+      <Text style={styles.sectionTitle}>{title}</Text>
+      <View style={styles.sectionContainer}>
         {items.map((item, index) => (
-          <View style={styles.userSectionCard} key={index}>
+          <View style={styles.sectionCard} key={index}>
             <Image source={img} style={styles.userSectionImg} />
             <View>
-              <Text>{item.title}</Text>
+              <Text style={styles.sectionCardTitle}>{item.title}</Text>
               {item.subtitle && (
-                <Text style={styles.userSectionSubtitle}>{item.subtitle}</Text>
+                <Text style={styles.sectionCardSubtitle}>{item.subtitle}</Text>
               )}
             </View>
           </View>
@@ -73,28 +86,20 @@ export default function Profile() {
     if (!localUserInfo) return setIsLoggedIn(false);
     setUserInfo(JSON.parse(localUserInfo));
 
-    //todo: if the user updated their info, we need to update it here
-    //handle this when user opens the app
-    const result = await getUserInfoFromId(userInfo?.id);
-    if (result?.data?.length === 0)
-      //this should not occur in the future if we store the user info in the corresponding user table
-      return console.log('No user found with that id');
-    const user = result?.data[0];
+    const { data } = await getUserInfoFromId(userInfo?.id);
+    if (!data) return console.log('No user found with that id');
+    const user = data[0];
     setUserInfo({ id: user.id, name: user.name, country: user.country });
   };
 
   const handleSignOut = async () => {
     try {
       await AsyncStorage.removeItem('user');
-      await AsyncStorage.setItem('user', '');
+      storeDataLocally({ key: 'user', value: '' });
       setIsLoggedIn(false);
     } catch (exception) {
       console.log(exception);
     }
-  };
-
-  const handleEditProfile = () => {
-    navigation.navigate('UserInfo' as never);
   };
 
   useEffect(() => {
@@ -102,13 +107,13 @@ export default function Profile() {
   }, []);
 
   return (
-    <>
+    <SafeAreaView>
       <ScrollView contentContainerStyle={styles.container}>
-        <ProfileUser item={userInfo} />
-        <Button title="Editar perfil" onPress={handleEditProfile} />
+        <Text style={styles.title}>Perfil</Text>
+        <UserProfileInfo item={userInfo} />
         <View style={styles.containerInner}>
-          <View style={styles.goal}>
-            <Text>
+          <View style={styles.bioContainer}>
+            <Text style={styles.bioText}>
               My mission is to create 100 social projects by 2040 and
               collaborate with people around the world.
             </Text>
@@ -132,19 +137,19 @@ export default function Profile() {
           color={COLORS.primaryBlack}
         />
       </ScrollView>
-    </>
+    </SafeAreaView>
   );
 }
+
+const windowWidth = Dimensions.get('window').width;
 
 const styles = StyleSheet.create({
   container: {
     backgroundColor: COLORS.primaryWhite,
-    display: 'flex',
-    alignItems: 'center',
     justifyContent: 'flex-start',
-    paddingTop: 40,
-    paddingHorizontal: 32,
-    paddingBottom: 36
+    alignItems: 'flex-start',
+    padding: SPACING.medium,
+    minHeight: '100%'
   },
 
   containerInner: {
@@ -154,8 +159,9 @@ const styles = StyleSheet.create({
   },
 
   title: {
-    fontSize: 18,
-    marginBottom: 8
+    fontSize: TYPOGRAPHY.extraLargeTitle,
+    marginBottom: SPACING.large,
+    color: COLORS.primaryBlack
   },
 
   menu: {
@@ -165,10 +171,16 @@ const styles = StyleSheet.create({
   },
 
   section: {
-    marginTop: 24
+    marginBottom: SPACING.large
   },
 
-  userSectionContainer: {
+  sectionTitle: {
+    fontSize: TYPOGRAPHY.baseText,
+    color: COLORS.darkGrey,
+    marginBottom: SPACING.small
+  },
+
+  sectionContainer: {
     display: 'flex',
     flexDirection: 'row',
     gap: 8,
@@ -176,8 +188,9 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap'
   },
 
-  userSectionCard: {
+  sectionCard: {
     borderWidth: 1,
+    borderColor: '#e5e5e5',
     borderRadius: 8,
     padding: 8,
     backgroundColor: COLORS.fullWhite,
@@ -186,12 +199,29 @@ const styles = StyleSheet.create({
     alignItems: 'center'
   },
 
-  goal: {
+  sectionCardTitle: {
+    fontSize: TYPOGRAPHY.baseText,
+    fontWeight: '600',
+    color: COLORS.darkGrey
+  },
+
+  sectionCardSubtitle: {
+    fontSize: TYPOGRAPHY.noteText,
+    color: COLORS.darkGrey
+  },
+
+  bioContainer: {
     borderRadius: 4,
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 12
+    marginBottom: SPACING.large,
+    fontSize: TYPOGRAPHY.baseText
+  },
+
+  bioText: {
+    fontSize: TYPOGRAPHY.baseText,
+    color: COLORS.darkGrey
   },
 
   userSectionImg: {
@@ -199,10 +229,5 @@ const styles = StyleSheet.create({
     height: 32,
     borderRadius: 100,
     marginRight: 8
-  },
-
-  userSectionSubtitle: {
-    fontSize: 12,
-    color: COLORS.darkGrey
   }
 });
