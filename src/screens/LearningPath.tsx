@@ -1,9 +1,27 @@
-import React from 'react';
-import { View, Text, Pressable, StyleSheet, Image } from 'react-native';
+import React, { useEffect } from 'react';
+import {
+  View,
+  Text,
+  Pressable,
+  StyleSheet,
+  Image,
+  SafeAreaView,
+  Animated
+} from 'react-native';
 import { COLORS } from '../constants/colors';
 import { formStyles } from '../globalStyles/forms';
 import { IProject } from './forms/CreateProject';
 import { generateLearningPath } from '../utils/getLearningPath';
+import TYPOGRAPHY from '../constants/typography';
+import ProjectInfo from '../components/ProjectInfo';
+import SPACING from '../constants/spacing';
+
+const areas = {
+  0: 'Education',
+  1: 'Technology',
+  2: 'Negocios',
+  3: 'Diseño'
+};
 
 const questionnaire = [
   {
@@ -23,10 +41,69 @@ const questionnaire = [
   }
 ];
 
+const bookIcon = require(`../../assets/icons/book.png`);
+const boxIcon = require(`../../assets/icons/box.png`);
+const graphIcon = require(`../../assets/icons/graph.png`);
+const lightIcon = require(`../../assets/icons/light.png`);
+const mapIcon = require(`../../assets/icons/map.png`);
+const userIcon = require(`../../assets/icons/user.png`);
+const megaphoneIcon = require(`../../assets/icons/megaphone.png`);
+
+const bookBlackIcon = require(`../../assets/icons/bookBlack.png`);
+const boxBlackIcon = require(`../../assets/icons/boxBlack.png`);
+const graphBlackIcon = require(`../../assets/icons/graphBlack.png`);
+const lightBlackIcon = require(`../../assets/icons/lightBlack.png`);
+const mapBlackIcon = require(`../../assets/icons/mapBlack.png`);
+const userBlackIcon = require(`../../assets/icons/userBlack.png`);
+const megaphoneBlackIcon = require(`../../assets/icons/megaphoneBlack.png`);
+
+const iconsMap = {
+  ideas: lightIcon,
+  evaluation: graphIcon,
+  concept: bookIcon,
+  mvp: boxIcon,
+  map: mapIcon,
+  user: userIcon,
+  megaphone: megaphoneIcon
+};
+
+const iconsBlackMap = {
+  ideas: lightBlackIcon,
+  evaluation: graphBlackIcon,
+  concept: bookBlackIcon,
+  mvp: boxBlackIcon,
+  map: mapBlackIcon,
+  user: userBlackIcon,
+  megaphone: megaphoneBlackIcon
+};
+
 const LearningPath = ({ navigation, route }) => {
-  const img = require('../../assets/abstract/abstract5.jpg');
   const currentProject: IProject = route?.params;
+
+  const el1 = React.useRef(new Animated.Value(0)).current;
+  const el2 = React.useRef(new Animated.Value(0)).current;
+  const el3 = React.useRef(new Animated.Value(0)).current;
+  const el4 = React.useRef(new Animated.Value(0)).current;
+  const el5 = React.useRef(new Animated.Value(0)).current;
   const learningPath = generateLearningPath(questionnaire);
+
+  const userProgress = {
+    ideas: 1,
+    evaluation: 1,
+    concept: 1,
+    mvp: 0,
+    map: 0,
+    user: 0,
+    megaphone: 0
+  };
+
+  const getImageSrc = step => {
+    const isCompleted = userProgress[step.name] === 1;
+    const img = isCompleted ? iconsMap[step.name] : iconsBlackMap[step.name];
+    if (!img) return iconsBlackMap['ideas'];
+    return img;
+  };
+
   const handleSelectStep = step => {
     navigation.navigate('LearningUnit', step);
   };
@@ -35,48 +112,88 @@ const LearningPath = ({ navigation, route }) => {
     navigation.navigate('CreateProject');
   };
 
+  const getStepTitleStyle = step => {
+    const isCurrentSetpCompleted = userProgress[step.name] === 1;
+    if (isCurrentSetpCompleted) {
+      return styles.learningUnitTitle;
+    } else {
+      return { ...styles.learningUnitTitle, color: COLORS.lightGrey };
+    }
+  };
+  const animatableElements = [el1, el2, el3, el4, el5];
+
+  useEffect(() => {
+    if (!currentProject) return;
+    const animatable = animatableElements.map(elem =>
+      Animated.timing(elem, {
+        toValue: 1,
+        duration: 1000,
+        useNativeDriver: true
+      })
+    );
+
+    Animated.stagger(200, animatable).start();
+  }, [currentProject]);
+
   if (!currentProject)
     return (
-      <View style={styles.initialContainer}>
+      <View style={styles.newProjectContainer}>
+        <Image source={iconsMap['ideas']} style={styles.newProjectImg} />
+        <Text style={styles.subtitle}>¿Tienes una nueva idea en mente?</Text>
+        <Text style={styles.description}>
+          Crea un nuevo proyecto paso a paso.
+        </Text>
         <Pressable style={styles.btn} onPress={handleCreateProject}>
           <Text style={formStyles.btnPrimaryText}>Crea un nuevo proyecto</Text>
         </Pressable>
-        <Text>
-          Tu roadmap aparecerá en esta sección después de crear tu primera
-          proyecto.
-        </Text>
       </View>
     );
 
   return (
-    <View style={styles.container}>
-      <View style={styles.listItem}>
-        <Image source={img} style={styles.userImg} />
-        <View style={styles.userInfo}>
-          <Text style={styles.name}>{currentProject.name}</Text>
-          <Text style={styles.listItemSubtitle}>{currentProject.area}</Text>
-        </View>
+    <SafeAreaView>
+      <View style={styles.container}>
+        <Text style={styles.title}>Tu ruta</Text>
+        <ProjectInfo
+          currentProject={{
+            ...currentProject,
+            area: areas[currentProject.area]
+          }}
+        />
+        {learningPath?.map((step, index) => (
+          <Animated.View
+            style={{
+              transform: [
+                {
+                  translateX: animatableElements[index].interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [-100, 0]
+                  })
+                }
+              ]
+            }}
+          >
+            <Pressable
+              style={styles.learningStep}
+              key={index}
+              onPress={() => handleSelectStep(step)}
+            >
+              <Image
+                source={getImageSrc(step)}
+                style={styles.moduleImg}
+              ></Image>
+              <Text style={getStepTitleStyle(step)}>{step.title}</Text>
+            </Pressable>
+          </Animated.View>
+        ))}
       </View>
-      {learningPath?.map((step, index) => (
-        <Pressable
-          style={styles.option}
-          key={index}
-          onPress={() => handleSelectStep(step)}
-        >
-          <View style={styles.number}>
-            <Text>{index + 1}</Text>
-          </View>
-          <Text>{step.title}</Text>
-        </Pressable>
-      ))}
-    </View>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
-  initialContainer: {
-    backgroundColor: COLORS.primaryBlack,
-    padding: 20,
+  newProjectContainer: {
+    backgroundColor: COLORS.primaryWhite,
+    padding: SPACING.medium,
     minHeight: '100%',
     display: 'flex',
     justifyContent: 'center',
@@ -85,40 +202,52 @@ const styles = StyleSheet.create({
 
   container: {
     backgroundColor: COLORS.primaryWhite,
-    padding: 20,
-    minHeight: '100%',
-    paddingTop: 40,
-    display: 'flex',
-    alignItems: 'center',
+    flex: 1,
     justifyContent: 'flex-start',
-    gap: 12
+    padding: SPACING.medium,
+    minHeight: '100%'
   },
 
-  option: {
+  title: {
+    fontSize: TYPOGRAPHY.extraLargeTitle,
+    marginBottom: SPACING.large,
+    color: COLORS.primaryBlack
+  },
+
+  subtitle: {
+    textAlign: 'center',
+    fontSize: TYPOGRAPHY.smallTitle,
+    letterSpacing: -0.1,
+    fontWeight: '700',
+    marginBottom: SPACING.base,
+    color: COLORS.primaryBlack
+  },
+
+  description: {
+    fontSize: TYPOGRAPHY.baseText,
+    marginBottom: SPACING.large,
+    color: COLORS.darkGrey
+  },
+
+  learningStep: {
     shadowColor: COLORS.darkGrey,
     width: '100%',
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
-    shadowOffset: { width: 1, height: 1 },
-    shadowOpacity: 1,
+    gap: 16,
     shadowRadius: 0,
     elevation: 1,
-    borderRadius: 4,
-    borderWidth: 1,
-    borderColor: COLORS.darkGrey,
+    borderColor: '#e5e5e5',
+    borderBottomWidth: 1,
     backgroundColor: COLORS.primaryWhite,
-    padding: 12
+    paddingBottom: SPACING.medium,
+    marginTop: SPACING.base
   },
 
-  number: {
-    width: 24,
-    height: 24,
-    borderRadius: 100,
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center'
+  learningUnitTitle: {
+    fontWeight: '600',
+    color: COLORS.darkGrey
   },
 
   listItem: {
@@ -128,16 +257,6 @@ const styles = StyleSheet.create({
     gap: 8,
     paddingVertical: 16,
     alignItems: 'center'
-  },
-
-  userInfo: {
-    display: 'flex',
-    alignItems: 'center'
-  },
-
-  name: { fontWeight: '600', marginTop: 4 },
-  listItemSubtitle: {
-    color: COLORS.darkGrey
   },
 
   userImg: {
@@ -158,7 +277,7 @@ const styles = StyleSheet.create({
   },
 
   level: {
-    fontSize: 12,
+    fontSize: TYPOGRAPHY.title,
     color: COLORS.primaryWhite
   },
 
@@ -166,6 +285,20 @@ const styles = StyleSheet.create({
     ...formStyles.btnPrimary,
     width: '100%',
     marginBottom: 24
+  },
+
+  moduleImg: {
+    width: 48,
+    height: 48,
+    borderRadius: 50
+  },
+
+  newProjectImg: {
+    width: 64,
+    height: 64,
+    borderRadius: 50,
+
+    marginBottom: SPACING.medium
   }
 });
 export default LearningPath;
