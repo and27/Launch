@@ -1,5 +1,6 @@
 import { StyleSheet } from 'react-native';
 import { COLORS } from '../constants/colors';
+import TYPOGRAPHY from '../constants/typography';
 
 const baseButton: any = {
   display: 'flex',
@@ -23,20 +24,24 @@ export const formStyles = StyleSheet.create({
     ...baseButton,
     backgroundColor: COLORS.primaryBlack
   },
+
   btnPrimaryText: {
     color: COLORS.primaryWhite,
-    fontSize: 18
+    fontSize: TYPOGRAPHY.smallTitle
   },
+
   btnSecondary: {
     ...baseButton,
     backgroundColor: COLORS.primaryWhite,
     borderColor: COLORS.primaryBlack,
     borderWidth: 1
   },
+
   btnSecondaryText: {
     color: COLORS.primaryBlack,
-    fontSize: 18
+    fontSize: TYPOGRAPHY.smallTitle
   },
+
   errorText: {
     color: COLORS.error,
     fontSize: 12,
