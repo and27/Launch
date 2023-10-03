@@ -20,7 +20,10 @@ import TYPOGRAPHY from '../constants/typography';
 import SPACING from '../constants/spacing';
 import { globalStyles } from '../globalStyles/global';
 import UserProfileInfo from '../components/UserProfileInfo';
-import { storeDataLocally } from '../utils/asyncStore';
+import {
+  getUserIdFromLocalStorage,
+  storeDataLocally
+} from '../utils/asyncStore';
 
 const img = require('../../assets/abstract/abstract7.jpg');
 
@@ -79,15 +82,13 @@ export default function Profile() {
     name: ''
   });
   const { setIsLoggedIn } = useContext(AuthContext);
-  const navigation = useNavigation();
 
   const getUserInfo = async () => {
-    const localUserInfo = await AsyncStorage.getItem('user');
-    if (!localUserInfo) return setIsLoggedIn(false);
-    setUserInfo(JSON.parse(localUserInfo));
+    const { data: userId } = await getUserIdFromLocalStorage();
+    if (!userId) return console.error('No user found locally');
+    const { data } = await getUserInfoFromId(userId);
+    if (!data) return console.error('No user found with that id');
 
-    const { data } = await getUserInfoFromId(userInfo?.id);
-    if (!data) return console.log('No user found with that id');
     const user = data[0];
     setUserInfo({ id: user.id, name: user.name, country: user.country });
   };

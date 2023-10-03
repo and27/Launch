@@ -8,11 +8,10 @@ import {
   Image
 } from 'react-native';
 import { Dimensions } from 'react-native';
-import uuid from 'react-native-uuid';
 import { AuthContext } from '../../context/authContext';
 import { formStyles } from '../../globalStyles/forms';
 import { globalStyles } from '../../globalStyles/global';
-import { signupWithPassword } from '../../utils/supabase';
+import { saveUser, signupWithPassword } from '../../utils/supabase';
 import { Controller, SubmitErrorHandler, useForm } from 'react-hook-form';
 import { ScrollView } from 'react-native-gesture-handler';
 import { storeDataLocally } from '../../utils/asyncStore';
@@ -29,18 +28,31 @@ export default function Register() {
   const { setIsLoggedIn } = useContext(AuthContext);
 
   const handleSaveData = async (registerInfo: RegisterFormValues) => {
-    const userid = uuid.v4();
-    const { error } = await signupWithPassword({
-      ...registerInfo,
-      userid: userid
+    const { data, error } = await signupWithPassword({
+      ...registerInfo
     });
 
-    if (error) {
-      console.log(error);
-    } else {
-      setIsLoggedIn(true);
-      storeDataLocally({ key: 'user', value: userid });
-    }
+    if (error) return console.error(error);
+    const userid = data?.session?.user?.id;
+
+    const profileUserInfoForLocalStorage = {
+      id: userid,
+      name: registerInfo.email
+    };
+
+    const profileUserInfoForSupabase = {
+      userid: userid,
+      name: registerInfo.email
+    };
+
+    const { error: saveUserErr } = await saveUser(profileUserInfoForSupabase);
+    if (saveUserErr) return console.error(saveUserErr);
+
+    setIsLoggedIn(true);
+    storeDataLocally({
+      key: 'user',
+      value: JSON.stringify(profileUserInfoForLocalStorage)
+    });
   };
 
   const {

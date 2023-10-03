@@ -12,11 +12,13 @@ import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { formStyles } from '../../globalStyles/forms';
 import { globalStyles } from '../../globalStyles/global';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getUserInfoFromId, saveUser, updateUser } from '../../utils/supabase';
 import { COLORS } from '../../constants/colors';
 import SPACING from '../../constants/spacing';
-import { storeDataLocally } from '../../utils/asyncStore';
+import {
+  getUserIdFromLocalStorage,
+  storeDataLocally
+} from '../../utils/asyncStore';
 
 const windowWidth = Dimensions.get('window').width;
 
@@ -32,7 +34,7 @@ export default function UserInfoForm() {
     setIsUpdated(true);
     storeDataLocally({
       key: 'user',
-      value: JSON.stringify({ ...user, userid: userid })
+      value: JSON.stringify({ ...user, id: userid })
     });
     setTimeout(
       () =>
@@ -41,13 +43,12 @@ export default function UserInfoForm() {
     );
   };
   const handleSaveData = async () => {
-    const storedUser = await AsyncStorage.getItem('user');
-    if (!storedUser) return console.log('No user stored');
+    const { data: userid, error } = await getUserIdFromLocalStorage();
+    if (error) return console.error(error);
 
-    const userid = JSON.parse(storedUser).id;
     const { data: existingUser } = await getUserInfoFromId(userid);
 
-    if (existingUser) {
+    if (existingUser?.length > 0) {
       const { error } = await updateUser({ id: userid, ...user });
       if (!error) handleRedirectToProfile(userid);
     } else {
