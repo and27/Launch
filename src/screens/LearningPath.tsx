@@ -15,6 +15,7 @@ import { generateLearningPath } from '../utils/getLearningPath';
 import TYPOGRAPHY from '../constants/typography';
 import ProjectInfo from '../components/ProjectInfo';
 import SPACING from '../constants/spacing';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const areas = {
   0: 'Education',
@@ -77,8 +78,28 @@ const iconsBlackMap = {
   megaphone: megaphoneBlackIcon
 };
 
+const getProjectInfo = async route => {
+  const localProject = await AsyncStorage.getItem('project');
+  if (localProject) return JSON.parse(localProject);
+
+  const { params } = route;
+  if (!params) return null;
+
+  const { project } = params;
+  return project;
+};
+
 const LearningPath = ({ navigation, route }) => {
-  const currentProject: IProject = route?.params;
+  const [currentProject, setCurrentProject] = React.useState<IProject | null>();
+
+  useEffect(() => {
+    const getProject = async () => {
+      const project = await getProjectInfo(route);
+      setCurrentProject(project);
+    };
+
+    getProject();
+  }, [route]);
 
   const el1 = React.useRef(new Animated.Value(0)).current;
   const el2 = React.useRef(new Animated.Value(0)).current;
@@ -161,6 +182,7 @@ const LearningPath = ({ navigation, route }) => {
         />
         {learningPath?.map((step, index) => (
           <Animated.View
+            key={index}
             style={{
               transform: [
                 {

@@ -20,6 +20,11 @@ import { saveProjectInfo } from '../../utils/supabase';
 import { Area, Objective, Resource } from '../../enums/projectEnums';
 import { COLORS } from '../../constants/colors';
 import SPACING from '../../constants/spacing';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import {
+  getUserIdFromLocalStorage,
+  storeDataLocally
+} from '../../utils/asyncStore';
 
 const windowWidth = Dimensions.get('window').width;
 export interface IProject {
@@ -32,26 +37,33 @@ export interface IProject {
 
 export default function CreateProject() {
   const { navigate } = useNavigation<StackNavigationProp<ParamListBase>>();
-
   const handleSaveData = async (projectData: IProject) => {
+    const { data: userid, error: useridErr } =
+      await getUserIdFromLocalStorage();
+    if (useridErr) return console.error(useridErr);
+
+    if (!userid) return console.error('Ha ocurrido un error con el usuario');
+
     const dataToSend = {
       project_description: projectData.idea,
       project_name: projectData.name,
-      ...projectData
+      ...projectData,
+      user_id: userid
     };
     delete dataToSend.name;
     delete dataToSend.idea;
 
     const { error } = await saveProjectInfo(dataToSend);
+    if (error) console.error(error);
 
-    if (error) {
-      console.log(error);
-    } else {
-      setIsSucessForm(true);
-      setTimeout(() => {
-        navigate('Roadmap', projectData);
-      }, 1500);
-    }
+    await storeDataLocally({
+      key: 'project',
+      value: JSON.stringify(projectData)
+    });
+    setIsSucessForm(true);
+    setTimeout(() => {
+      navigate('Roadmap', projectData);
+    }, 1500);
   };
 
   const {
