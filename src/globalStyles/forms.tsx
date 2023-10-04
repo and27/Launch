@@ -20,6 +20,15 @@ export const formStyles = StyleSheet.create({
     borderRadius: 4
   },
 
+  btnBase: {
+    ...baseButton
+  },
+
+  btnSecondaryBase: {
+    ...baseButton,
+    borderWidth: 1
+  },
+
   btnPrimary: {
     ...baseButton,
     backgroundColor: COLORS.primaryBlack

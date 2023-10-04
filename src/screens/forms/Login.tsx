@@ -18,6 +18,7 @@ import { formStyles } from '../../globalStyles/forms';
 import { globalStyles } from '../../globalStyles/global';
 import { useForm, Controller, SubmitErrorHandler } from 'react-hook-form';
 import { storeDataLocally } from '../../utils/asyncStore';
+import SPACING from '../../constants/spacing';
 
 const windowWidth = Dimensions.get('window').width;
 type FormValues = {
@@ -77,7 +78,7 @@ export default function Login() {
         style={styles.logo}
       />
       <View>
-        <Text>Ingresa tu correo</Text>
+        <Text style={styles.labelText}>Ingresa tu correo</Text>
         <Controller
           control={control}
           name="email"
@@ -107,7 +108,7 @@ export default function Login() {
           }}
         />
 
-        <Text>Ingresa tu contraseña </Text>
+        <Text style={styles.labelText}>Ingresa tu contraseña </Text>
         <Controller
           control={control}
           name="password"
@@ -140,30 +141,46 @@ export default function Login() {
             }
           }}
         />
-        <Pressable
-          style={formStyles.btnPrimary}
-          onPress={handleSubmit(onSubmit, onError)}
-          accessibilityLabel="Login button"
-        >
-          <Text style={formStyles.btnPrimaryText}>Ingresa</Text>
-        </Pressable>
-        <Pressable
-          style={{ ...formStyles.btnSecondary, marginVertical: 8 }}
-          onPress={() => {}}
-          accessibilityLabel="Google login button"
-        >
-          <Text style={formStyles.btnSecondaryText}>Google login</Text>
-        </Pressable>
-        <Button
-          title="Crear cuenta"
-          onPress={handleRegister}
-          color={COLORS.primaryBlack}
-        />
-        <Button
-          title="Olvidé mi contraseña"
-          onPress={() => {}}
-          color={COLORS.primaryBlack}
-        />
+        <View style={styles.primaryActions}>
+          <Pressable
+            style={({ pressed }) => [
+              {
+                width: windowWidth - 40,
+                backgroundColor: pressed ? COLORS.darkGrey : COLORS.primaryBlack
+              },
+              formStyles.btnBase
+            ]}
+            onPress={handleSubmit(onSubmit, onError)}
+            accessibilityLabel="Login button"
+          >
+            <Text style={formStyles.btnPrimaryText}>Ingresa</Text>
+          </Pressable>
+          <Pressable
+            style={({ pressed }) => [
+              {
+                width: windowWidth - 40,
+                backgroundColor: pressed
+                  ? COLORS.secondaryWhite
+                  : COLORS.primaryWhite
+              },
+              formStyles.btnSecondaryBase
+            ]}
+            onPress={() => {}}
+            accessibilityLabel="Google login button"
+          >
+            <Text style={formStyles.btnSecondaryText}>Google login</Text>
+          </Pressable>
+        </View>
+        <View style={styles.secondaryActons}>
+          <Pressable onPress={handleRegister}>
+            <Text style={formStyles.btnSecondaryText}>Crear cuenta</Text>
+          </Pressable>
+          <Pressable>
+            <Text style={formStyles.btnSecondaryText}>
+              Olvidé mi contraseña
+            </Text>
+          </Pressable>
+        </View>
       </View>
     </ScrollView>
   );
@@ -177,17 +194,40 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
     marginVertical: 64
   },
+
   logo: {
     width: 100,
     height: 100,
     borderRadius: 200
   },
+
   inputContainer: {
-    marginBottom: 24,
+    marginBottom: SPACING.medium,
     minHeight: 48
   },
+
   input: {
     ...formGlobalStyles.input,
     width: windowWidth - 40
+  },
+
+  labelText: {
+    color: COLORS.darkGrey
+  },
+
+  secondaryActons: {
+    display: 'flex',
+    gap: SPACING.medium,
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginTop: SPACING.large
+  },
+
+  primaryActions: {
+    display: 'flex',
+    gap: SPACING.base,
+    alignItems: 'center',
+    width: windowWidth - 40,
+    marginTop: SPACING.base
   }
 });

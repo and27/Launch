@@ -59,5 +59,3 @@ export function LoginStack() {
     </Stack.Navigator>
   );
 }
-
-export default MyStack;
