@@ -2,18 +2,20 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import Libary from './Library';
-import MyStack, { LoginStack, ProfileStack } from './Stack';
+import { LearningPathStack, LoginStack } from './Stack';
 import { AuthContext } from '../context/authContext';
 import { useContext } from 'react';
+import LearningPath from './LearningPath';
+import Profile from './Profile';
 
 const Tab = createBottomTabNavigator();
 
-function MyTabs() {
+export function MyTabs() {
   return (
     <Tab.Navigator screenOptions={{ headerShown: false }}>
       <Tab.Screen
         name="Launch"
-        component={MyStack}
+        component={LearningPath}
         options={{
           tabBarActiveTintColor: '#000',
           tabBarLabel: 'Ruta',
@@ -29,7 +31,7 @@ function MyTabs() {
       />
       <Tab.Screen
         name="Perfil"
-        component={ProfileStack}
+        component={Profile}
         options={{
           tabBarActiveTintColor: '#000',
           tabBarIcon: ({ focused }) => (
@@ -63,7 +65,7 @@ export default function Navigation() {
   const { isLoggedIn } = useContext(AuthContext);
   return (
     <NavigationContainer>
-      {isLoggedIn ? <MyTabs /> : <LoginStack />}
+      {isLoggedIn ? <LearningPathStack /> : <LoginStack />}
     </NavigationContainer>
   );
 }

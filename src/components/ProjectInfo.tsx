@@ -8,7 +8,7 @@ import SPACING from '../constants/spacing';
 
 const img = require('../../assets/abstract/abstract4.jpg');
 
-export default function ProjectInfo({ currentProject }) {
+export default function ProjectInfo({ currentProject, handleForm }) {
   return (
     <View style={styles.container}>
       <Image source={img} style={styles.img} />
@@ -16,7 +16,7 @@ export default function ProjectInfo({ currentProject }) {
         <Text style={styles.title}>{currentProject?.name}</Text>
         <Text style={styles.subtitle}>{currentProject?.area}</Text>
       </View>
-      <Pressable style={styles.btn}>
+      <Pressable style={styles.btn} onPress={handleForm}>
         <Ionicons
           name="ellipsis-vertical-sharp"
           size={24}

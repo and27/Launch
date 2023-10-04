@@ -16,6 +16,7 @@ import TYPOGRAPHY from '../constants/typography';
 import ProjectInfo from '../components/ProjectInfo';
 import SPACING from '../constants/spacing';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { ScrollView } from 'react-native-gesture-handler';
 
 const areas = {
   0: 'Education',
@@ -172,42 +173,45 @@ const LearningPath = ({ navigation, route }) => {
 
   return (
     <SafeAreaView>
-      <View style={styles.container}>
-        <Text style={styles.title}>Tu ruta</Text>
-        <ProjectInfo
-          currentProject={{
-            ...currentProject,
-            area: areas[currentProject.area]
-          }}
-        />
-        {learningPath?.map((step, index) => (
-          <Animated.View
-            key={index}
-            style={{
-              transform: [
-                {
-                  translateX: animatableElements[index].interpolate({
-                    inputRange: [0, 1],
-                    outputRange: [-100, 0]
-                  })
-                }
-              ]
+      <ScrollView>
+        <View style={styles.container}>
+          <Text style={styles.title}>Tu ruta</Text>
+          <ProjectInfo
+            handleForm={handleCreateProject}
+            currentProject={{
+              ...currentProject,
+              area: areas[currentProject.area]
             }}
-          >
-            <Pressable
-              style={styles.learningStep}
+          />
+          {learningPath?.map((step, index) => (
+            <Animated.View
               key={index}
-              onPress={() => handleSelectStep(step)}
+              style={{
+                transform: [
+                  {
+                    translateX: animatableElements[index].interpolate({
+                      inputRange: [0, 1],
+                      outputRange: [-100, 0]
+                    })
+                  }
+                ]
+              }}
             >
-              <Image
-                source={getImageSrc(step)}
-                style={styles.moduleImg}
-              ></Image>
-              <Text style={getStepTitleStyle(step)}>{step.title}</Text>
-            </Pressable>
-          </Animated.View>
-        ))}
-      </View>
+              <Pressable
+                style={styles.learningStep}
+                key={index}
+                onPress={() => handleSelectStep(step)}
+              >
+                <Image
+                  source={getImageSrc(step)}
+                  style={styles.moduleImg}
+                ></Image>
+                <Text style={getStepTitleStyle(step)}>{step.title}</Text>
+              </Pressable>
+            </Animated.View>
+          ))}
+        </View>
+      </ScrollView>
     </SafeAreaView>
   );
 };
@@ -225,7 +229,7 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: COLORS.primaryWhite,
     flex: 1,
-    justifyContent: 'flex-start',
+    justifyContent: 'center',
     padding: SPACING.medium,
     minHeight: '100%'
   },
@@ -257,7 +261,7 @@ const styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 16,
+    gap: SPACING.medium,
     shadowRadius: 0,
     elevation: 1,
     borderColor: '#e5e5e5',
@@ -319,7 +323,6 @@ const styles = StyleSheet.create({
     width: 64,
     height: 64,
     borderRadius: 50,
-
     marginBottom: SPACING.medium
   }
 });
