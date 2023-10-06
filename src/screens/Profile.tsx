@@ -1,96 +1,57 @@
 import React, { useContext, useEffect, useState } from 'react';
-import {
-  Text,
-  View,
-  StyleSheet,
-  Button,
-  Image,
-  Pressable,
-  Dimensions,
-  SafeAreaView
-} from 'react-native';
+import { Text, View, StyleSheet, Button, SafeAreaView } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useNavigation } from '@react-navigation/native';
-import { Ionicons } from '@expo/vector-icons';
+import { useIsFocused } from '@react-navigation/native';
 import { getUserInfoFromId } from '../utils/supabase';
 import { COLORS } from '../constants/colors';
 import { AuthContext } from '../context/authContext';
 import TYPOGRAPHY from '../constants/typography';
 import SPACING from '../constants/spacing';
-import { globalStyles } from '../globalStyles/global';
 import UserProfileInfo from '../components/UserProfileInfo';
 import {
   getUserIdFromLocalStorage,
   storeDataLocally
 } from '../utils/asyncStore';
+import UserProfileCard from '../components/UserProfileCard';
 
-const img = require('../../assets/abstract/abstract7.jpg');
-
-interface IUserSectionProps {
-  title: string;
-  items: Array<{ title: string; subtitle?: string }>;
-  extendable?: boolean;
-}
-
-const UserSection: React.FC<IUserSectionProps> = ({
-  title,
-  items,
-  extendable
-}) => {
-  const navigation = useNavigation();
-
-  const handleShowProjectForm = () => {
-    navigation.navigate('CreateProject' as never);
-  };
-
-  return (
-    <View style={styles.section}>
-      <Text style={styles.sectionTitle}>{title}</Text>
-      <View style={styles.sectionContainer}>
-        {items.map((item, index) => (
-          <View style={styles.sectionCard} key={index}>
-            <Image source={img} style={styles.userSectionImg} />
-            <View>
-              <Text style={styles.sectionCardTitle}>{item.title}</Text>
-              {item.subtitle && (
-                <Text style={styles.sectionCardSubtitle}>{item.subtitle}</Text>
-              )}
-            </View>
-          </View>
-        ))}
-        {extendable && (
-          <Pressable
-            style={styles.userSectionCard}
-            onPress={handleShowProjectForm}
-          >
-            <Ionicons name="add-outline" size={18} color="black" />
-          </Pressable>
-        )}
-      </View>
-    </View>
-  );
+export type userInfo = {
+  id?: string;
+  name?: string;
+  country?: string;
 };
 
 export default function Profile() {
-  const [userInfo, setUserInfo] = useState<{
-    id: string;
-    name: string;
-    country?: string;
-  }>({
-    id: '',
-    name: ''
-  });
+  const isFocused = useIsFocused();
   const { setIsLoggedIn } = useContext(AuthContext);
+  const [userInfo, setUserInfo] = useState<userInfo>({});
 
   const getUserInfo = async () => {
     const { data: userId } = await getUserIdFromLocalStorage();
     if (!userId) return console.error('No user found locally');
+
     const { data } = await getUserInfoFromId(userId);
     if (!data) return console.error('No user found with that id');
 
-    const user = data[0];
-    setUserInfo({ id: user.id, name: user.name, country: user.country });
+    const userRaw = data[0];
+    const user = {
+      name: userRaw.name,
+      country: userRaw.country
+    };
+
+    return user;
+  };
+
+  const updateUserInfo = async () => {
+    const user = getUserInfo();
+    setUserInfo(prev => ({ ...prev, ...user }));
+
+    const previousUserData = await AsyncStorage.getItem('user');
+    const previousUserDataParsed = JSON.parse(previousUserData);
+    storeDataLocally({
+      key: 'user',
+      value: JSON.stringify({ ...previousUserDataParsed, ...user })
+    });
   };
 
   const handleSignOut = async () => {
@@ -104,14 +65,15 @@ export default function Profile() {
   };
 
   useEffect(() => {
-    getUserInfo();
-  }, []);
+    updateUserInfo();
+  }, [isFocused]);
 
   return (
     <SafeAreaView>
       <ScrollView contentContainerStyle={styles.container}>
         <Text style={styles.title}>Perfil</Text>
         <UserProfileInfo item={userInfo} />
+
         <View style={styles.containerInner}>
           <View style={styles.bioContainer}>
             <Text style={styles.bioText}>
@@ -119,12 +81,12 @@ export default function Profile() {
               collaborate with people around the world.
             </Text>
           </View>
-          <UserSection
+          <UserProfileCard
             title="Proyectos"
             items={[{ title: 'Project P', subtitle: 'Educación' }]}
             extendable
           />
-          <UserSection
+          <UserProfileCard
             title="Logros"
             items={[
               { title: 'Completar una idea' },
@@ -132,6 +94,7 @@ export default function Profile() {
             ]}
           />
         </View>
+
         <Button
           title="Cerrar sesión"
           onPress={handleSignOut}
@@ -141,8 +104,6 @@ export default function Profile() {
     </SafeAreaView>
   );
 }
-
-const windowWidth = Dimensions.get('window').width;
 
 const styles = StyleSheet.create({
   container: {
@@ -171,46 +132,6 @@ const styles = StyleSheet.create({
     alignSelf: 'stretch'
   },
 
-  section: {
-    marginBottom: SPACING.large
-  },
-
-  sectionTitle: {
-    fontSize: TYPOGRAPHY.baseText,
-    color: COLORS.darkGrey,
-    marginBottom: SPACING.small
-  },
-
-  sectionContainer: {
-    display: 'flex',
-    flexDirection: 'row',
-    gap: 8,
-    marginTop: 4,
-    flexWrap: 'wrap'
-  },
-
-  sectionCard: {
-    borderWidth: 1,
-    borderColor: '#e5e5e5',
-    borderRadius: 8,
-    padding: 8,
-    backgroundColor: COLORS.fullWhite,
-    display: 'flex',
-    flexDirection: 'row',
-    alignItems: 'center'
-  },
-
-  sectionCardTitle: {
-    fontSize: TYPOGRAPHY.baseText,
-    fontWeight: '600',
-    color: COLORS.darkGrey
-  },
-
-  sectionCardSubtitle: {
-    fontSize: TYPOGRAPHY.noteText,
-    color: COLORS.darkGrey
-  },
-
   bioContainer: {
     borderRadius: 4,
     display: 'flex',
@@ -223,12 +144,5 @@ const styles = StyleSheet.create({
   bioText: {
     fontSize: TYPOGRAPHY.baseText,
     color: COLORS.darkGrey
-  },
-
-  userSectionImg: {
-    width: 32,
-    height: 32,
-    borderRadius: 100,
-    marginRight: 8
   }
 });

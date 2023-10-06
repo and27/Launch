@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   StyleSheet,
@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import { Dimensions } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Ionicons } from '@expo/vector-icons';
 import { formStyles } from '../../globalStyles/forms';
 import { globalStyles } from '../../globalStyles/global';
@@ -19,16 +20,23 @@ import {
   getUserIdFromLocalStorage,
   storeDataLocally
 } from '../../utils/asyncStore';
+import { userInfo } from '../Profile';
 
 const windowWidth = Dimensions.get('window').width;
 
 export default function UserInfoForm() {
   const navigation = useNavigation();
   const [isUpdated, setIsUpdated] = useState(false);
-  const [user, setUser] = React.useState<{
-    name?: string;
-    country?: string;
-  }>({});
+  const [user, setUser] = React.useState<userInfo>({});
+
+  useEffect(() => {
+    const getPreviousUserInfo = async () => {
+      const data = await AsyncStorage.getItem('user');
+      setUser(JSON.parse(data));
+    };
+
+    getPreviousUserInfo();
+  }, []);
 
   const handleRedirectToProfile = userid => {
     setIsUpdated(true);
@@ -36,12 +44,9 @@ export default function UserInfoForm() {
       key: 'user',
       value: JSON.stringify({ ...user, id: userid })
     });
-    setTimeout(
-      () =>
-        navigation.reset({ index: 0, routes: [{ name: 'Profile' as never }] }),
-      1000
-    );
+    setTimeout(() => navigation.goBack(), 1000);
   };
+
   const handleSaveData = async () => {
     const { data: userid, error } = await getUserIdFromLocalStorage();
     if (error) return console.error(error);
@@ -64,12 +69,14 @@ export default function UserInfoForm() {
         <TextInput
           style={styles.input}
           placeholder="Nombre"
+          value={user.name}
           onChangeText={text => setUser({ ...user, name: text })}
         />
         <Text>País</Text>
         <TextInput
           style={styles.input}
           placeholder="País"
+          value={user.country}
           onChangeText={text => setUser({ ...user, country: text })}
         />
         <Pressable
