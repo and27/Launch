@@ -6,6 +6,7 @@ import CreateProject from './forms/CreateProject';
 import { COLORS } from '../constants/colors';
 import UserInfoForm from './forms/UserInfoForm';
 import { MyTabs } from './Tabs';
+import LibraryDetail from './LibraryDetail';
 
 const Stack = createNativeStackNavigator();
 
@@ -31,6 +32,11 @@ export function LearningPathStack() {
         name="UserInfo"
         component={UserInfoForm}
         options={{ headerTitle: 'Editar perfil' }}
+      />
+      <Stack.Screen
+        name="LibraryDetail"
+        component={LibraryDetail}
+        options={{ headerTitle: 'Learning' }}
       />
     </Stack.Navigator>
   );
