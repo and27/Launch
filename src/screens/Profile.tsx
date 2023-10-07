@@ -43,7 +43,7 @@ export default function Profile() {
   };
 
   const updateUserInfo = async () => {
-    const user = getUserInfo();
+    const user = await getUserInfo();
     setUserInfo(prev => ({ ...prev, ...user }));
 
     const previousUserData = await AsyncStorage.getItem('user');

@@ -32,7 +32,8 @@ export default function UserInfoForm() {
   useEffect(() => {
     const getPreviousUserInfo = async () => {
       const data = await AsyncStorage.getItem('user');
-      setUser(JSON.parse(data));
+      const parsedUser = JSON.parse(data);
+      setUser(parsedUser);
     };
 
     getPreviousUserInfo();
