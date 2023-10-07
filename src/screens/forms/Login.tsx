@@ -7,7 +7,9 @@ import {
   Text,
   Pressable,
   Image,
-  ScrollView
+  ScrollView,
+  ActivityIndicator,
+  Alert
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Dimensions } from 'react-native';
@@ -29,6 +31,8 @@ type FormValues = {
 export default function Login() {
   const navigation = useNavigation();
   const { setIsLoggedIn } = useContext(AuthContext);
+  const [isLoading, setIsLoading] = React.useState(false);
+  const [error, setError] = React.useState(false);
 
   const {
     handleSubmit,
@@ -37,6 +41,7 @@ export default function Login() {
   } = useForm();
 
   const onSubmit = (userCredentials: FormValues) => {
+    setIsLoading(true);
     handlePasswordLogin(userCredentials);
   };
 
@@ -51,7 +56,14 @@ export default function Login() {
     });
 
     if (error) {
-      console.log(error);
+      Alert.alert('Error', error.message, [
+        {
+          text: 'Cancel',
+          style: 'cancel'
+        },
+        { text: 'OK' }
+      ]);
+      setIsLoading(false);
       return setIsLoggedIn(false);
     }
 
@@ -60,6 +72,8 @@ export default function Login() {
       name: data?.session?.user?.email
     };
     const parsedUserInfo = JSON.stringify(userInfo);
+
+    setIsLoading(false);
     storeDataLocally({ key: 'user', value: parsedUserInfo });
     setIsLoggedIn(true);
   };
@@ -153,7 +167,9 @@ export default function Login() {
             onPress={handleSubmit(onSubmit, onError)}
             accessibilityLabel="Login button"
           >
-            <Text style={formStyles.btnPrimaryText}>Ingresa</Text>
+            <Text style={formStyles.btnPrimaryText}>
+              {isLoading ? <ActivityIndicator size="small" /> : 'Ingresa'}
+            </Text>
           </Pressable>
           <Pressable
             style={({ pressed }) => [
