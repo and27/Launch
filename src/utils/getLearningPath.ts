@@ -83,6 +83,7 @@ const completeLearningPath = [
   {
     level: 2,
     step: 9,
+    name: 'pitch',
     title: 'Comunicación - Pitch',
     description:
       'Comunicación efectiva de los resultados y desarrollo de un "Elevator Pitch" convincente.',

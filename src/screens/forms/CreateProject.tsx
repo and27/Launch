@@ -53,16 +53,16 @@ export default function CreateProject() {
     delete dataToSend.name;
     delete dataToSend.idea;
 
-    const { error } = await saveProjectInfo(dataToSend);
+    const { error, data } = await saveProjectInfo(dataToSend);
     if (error) console.error(error);
 
     await storeDataLocally({
       key: 'project',
-      value: JSON.stringify(projectData)
+      value: JSON.stringify(data)
     });
     setIsSucessForm(true);
     setTimeout(() => {
-      navigate('Roadmap', projectData);
+      navigate('Roadmap', data);
     }, 1500);
   };
 

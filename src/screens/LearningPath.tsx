@@ -127,7 +127,7 @@ const LearningPath = ({ navigation, route }) => {
   };
 
   const handleSelectStep = step => {
-    navigation.navigate('LearningUnit', step);
+    navigation.navigate('LearningUnit', { step, project: currentProject });
   };
 
   const handleCreateProject = () => {

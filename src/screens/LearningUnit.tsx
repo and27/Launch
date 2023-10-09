@@ -5,6 +5,8 @@ import BouncyCheckbox from 'react-native-bouncy-checkbox';
 import { Video, ResizeMode, Audio } from 'expo-av';
 import { COLORS } from '../constants/colors';
 import { formStyles } from '../globalStyles/forms';
+import { saveStageInfo } from '../utils/supabase';
+import SPACING from '../constants/spacing';
 
 const ideas = require('../../assets/testVideoM.mp4');
 const evaluation = require('../../assets/testVideoG.mp4');
@@ -19,9 +21,22 @@ const videos = {
 };
 
 const LearningUnit = ({ route }) => {
-  const currentPath = route?.params;
   const [learningUnitResponse, setLearningUnitResponse] = React.useState('');
   const video = React.useRef(null);
+
+  const currentPath = route?.params?.step;
+  const currentStageName = currentPath.name;
+  const currentProjectId = route?.params?.project[0].id;
+
+  const handleStageResponse = async () => {
+    const stageInfo = {
+      name: currentStageName,
+      response: learningUnitResponse,
+      project: currentProjectId
+    };
+    const { error } = await saveStageInfo(stageInfo);
+    if (error) alert(error.message);
+  };
 
   useEffect(() => {
     Audio.setAudioModeAsync({ playsInSilentModeIOS: true });
@@ -54,16 +69,17 @@ const LearningUnit = ({ route }) => {
             <Text style={styles.checkTex}>Mark as completed</Text>
           </View>
           {currentPath.question && (
-            <View>
+            <View style={styles.questionContainer}>
+              <Text style={styles.title}>Tu turno</Text>
               <Text style={styles.subtitle}>{currentPath.question}</Text>
               <TextInput
                 multiline={true}
                 numberOfLines={4}
-                placeholder="Escribe tu misión aquí"
+                placeholder="Escribe tu respuesta a continuación:"
                 style={{
                   borderBottomColor: COLORS.primaryBlack,
                   borderBottomWidth: 1,
-                  minHeight: 40,
+                  minHeight: 60,
                   textAlignVertical: 'top'
                 }}
                 onChangeText={text => setLearningUnitResponse(text)}
@@ -72,7 +88,10 @@ const LearningUnit = ({ route }) => {
             </View>
           )}
         </View>
-        <Pressable style={{ ...formStyles.btnPrimary, marginTop: 16 }}>
+        <Pressable
+          style={{ ...formStyles.btnPrimary, marginTop: 16 }}
+          onPress={handleStageResponse}
+        >
           <Text style={formStyles.btnPrimaryText}>Enviar</Text>
         </Pressable>
       </ScrollView>
@@ -85,7 +104,7 @@ export default LearningUnit;
 const styles = StyleSheet.create({
   container: {
     margin: 16,
-    paddingBottom: 32,
+    paddingBottom: SPACING.xlarge,
     justifyContent: 'center'
   },
 
@@ -119,5 +138,9 @@ const styles = StyleSheet.create({
 
   checkTex: {
     color: COLORS.primaryBlack
+  },
+
+  questionContainer: {
+    marginTop: SPACING.xlarge
   }
 });
