@@ -32,7 +32,6 @@ export default function Login() {
   const navigation = useNavigation();
   const { setIsLoggedIn } = useContext(AuthContext);
   const [isLoading, setIsLoading] = React.useState(false);
-  const [error, setError] = React.useState(false);
 
   const {
     handleSubmit,

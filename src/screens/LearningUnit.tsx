@@ -1,5 +1,13 @@
 import React, { useEffect } from 'react';
-import { View, StyleSheet, Text, TextInput, Pressable } from 'react-native';
+
+import {
+  View,
+  StyleSheet,
+  Text,
+  TextInput,
+  Pressable,
+  ActivityIndicator
+} from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import BouncyCheckbox from 'react-native-bouncy-checkbox';
 import { Video, ResizeMode, Audio } from 'expo-av';
@@ -7,6 +15,7 @@ import { COLORS } from '../constants/colors';
 import { formStyles } from '../globalStyles/forms';
 import { saveStageInfo } from '../utils/supabase';
 import SPACING from '../constants/spacing';
+import { Controller, SubmitErrorHandler, useForm } from 'react-hook-form';
 
 const ideas = require('../../assets/testVideoM.mp4');
 const evaluation = require('../../assets/testVideoG.mp4');
@@ -20,22 +29,42 @@ const videos = {
   mvp
 };
 
-const LearningUnit = ({ route }) => {
-  const [learningUnitResponse, setLearningUnitResponse] = React.useState('');
+const LearningUnit = ({ route, navigation }) => {
+  const [isLoading, setIsLoading] = React.useState(false);
   const video = React.useRef(null);
 
   const currentPath = route?.params?.step;
   const currentStageName = currentPath.name;
   const currentProjectId = route?.params?.project[0].id;
 
-  const handleStageResponse = async () => {
+  const handleStageResponse = async answer => {
     const stageInfo = {
       name: currentStageName,
-      response: learningUnitResponse,
+      response: answer,
       project: currentProjectId
     };
     const { error } = await saveStageInfo(stageInfo);
     if (error) alert(error.message);
+    else {
+      alert('Tu respuesta ha sido guardada');
+      navigation.goBack();
+    }
+    setIsLoading(false);
+  };
+
+  const {
+    handleSubmit,
+    control,
+    formState: { errors }
+  } = useForm();
+
+  const onSubmit = answer => {
+    setIsLoading(true);
+    handleStageResponse(answer);
+  };
+
+  const onError: SubmitErrorHandler<{ response: string }> = (errors, e) => {
+    return console.error(errors);
   };
 
   useEffect(() => {
@@ -72,27 +101,48 @@ const LearningUnit = ({ route }) => {
             <View style={styles.questionContainer}>
               <Text style={styles.title}>Tu turno</Text>
               <Text style={styles.subtitle}>{currentPath.question}</Text>
-              <TextInput
-                multiline={true}
-                numberOfLines={4}
-                placeholder="Escribe tu respuesta a continuación:"
-                style={{
-                  borderBottomColor: COLORS.primaryBlack,
-                  borderBottomWidth: 1,
-                  minHeight: 60,
-                  textAlignVertical: 'top'
+
+              <Controller
+                control={control}
+                name="answer"
+                render={({
+                  field: { onChange, onBlur, value },
+                  fieldState: { error }
+                }) => (
+                  <View>
+                    <TextInput
+                      multiline={true}
+                      numberOfLines={4}
+                      placeholder="Escribe tu respuesta a continuación:"
+                      style={{
+                        borderBottomColor: COLORS.primaryBlack,
+                        borderBottomWidth: 1,
+                        minHeight: 60,
+                        textAlignVertical: 'top'
+                      }}
+                      onBlur={onBlur}
+                      value={value}
+                      onChangeText={onChange}
+                    />
+                    {errors.answer && (
+                      <Text style={formStyles.errorText}>{error.message}</Text>
+                    )}
+                  </View>
+                )}
+                rules={{
+                  required: 'Ingresa tu respuesta'
                 }}
-                onChangeText={text => setLearningUnitResponse(text)}
-                value={learningUnitResponse}
               />
             </View>
           )}
         </View>
         <Pressable
           style={{ ...formStyles.btnPrimary, marginTop: 16 }}
-          onPress={handleStageResponse}
+          onPress={handleSubmit(onSubmit, onError)}
         >
-          <Text style={formStyles.btnPrimaryText}>Enviar</Text>
+          <Text style={formStyles.btnPrimaryText}>
+            {isLoading ? <ActivityIndicator size={'small'} /> : 'Enviar'}
+          </Text>
         </Pressable>
       </ScrollView>
     </>
