@@ -33,7 +33,7 @@ const LearningUnit = ({ route, navigation }) => {
   const [isLoading, setIsLoading] = React.useState(false);
   const video = React.useRef(null);
 
-  const currentPath = route?.params?.step;
+  const currentPath = route?.params?.stage;
   const currentStageName = currentPath.name;
   const currentProjectId = route?.params?.project[0].id;
 

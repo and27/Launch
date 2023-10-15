@@ -119,23 +119,23 @@ const LearningPath = ({ navigation, route }) => {
     megaphone: 0
   };
 
-  const getImageSrc = step => {
-    const isCompleted = userProgress[step.name] === 1;
-    const img = isCompleted ? iconsMap[step.name] : iconsBlackMap[step.name];
+  const getImageSrc = stage => {
+    const isCompleted = userProgress[stage.name] === 1;
+    const img = isCompleted ? iconsMap[stage.name] : iconsBlackMap[stage.name];
     if (!img) return iconsBlackMap['ideas'];
     return img;
   };
 
-  const handleSelectStep = step => {
-    navigation.navigate('LearningUnit', { step, project: currentProject });
+  const handleSelectStage = stage => {
+    navigation.navigate('LearningUnit', { stage, project: currentProject });
   };
 
   const handleCreateProject = () => {
     navigation.navigate('CreateProject');
   };
 
-  const getStepTitleStyle = step => {
-    const isCurrentSetpCompleted = userProgress[step.name] === 1;
+  const getStageTitleStyle = stage => {
+    const isCurrentSetpCompleted = userProgress[stage.name] === 1;
     if (isCurrentSetpCompleted) {
       return styles.learningUnitTitle;
     } else {
@@ -183,7 +183,7 @@ const LearningPath = ({ navigation, route }) => {
               area: areas[currentProject.area]
             }}
           />
-          {learningPath?.map((step, index) => (
+          {learningPath?.map((stage, index) => (
             <Animated.View
               key={index}
               style={{
@@ -198,15 +198,15 @@ const LearningPath = ({ navigation, route }) => {
               }}
             >
               <Pressable
-                style={styles.learningStep}
+                style={styles.learningStage}
                 key={index}
-                onPress={() => handleSelectStep(step)}
+                onPress={() => handleSelectStage(stage)}
               >
                 <Image
-                  source={getImageSrc(step)}
+                  source={getImageSrc(stage)}
                   style={styles.moduleImg}
                 ></Image>
-                <Text style={getStepTitleStyle(step)}>{step.title}</Text>
+                <Text style={getStageTitleStyle(stage)}>{stage.title}</Text>
               </Pressable>
             </Animated.View>
           ))}
@@ -255,7 +255,7 @@ const styles = StyleSheet.create({
     color: COLORS.darkGrey
   },
 
-  learningStep: {
+  learningStage: {
     shadowColor: COLORS.darkGrey,
     width: '100%',
     display: 'flex',
