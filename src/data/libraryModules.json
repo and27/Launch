@@ -1,0 +1,11 @@
+[
+  { "id": "1", "title": "Cómo validar mi idea", "level": "Iniciando" },
+  { "id": "2", "title": "Cómo crear un prototipo", "level": "Iniciando" },
+  { "id": "3", "title": "Cómo escalar mi negocio", "level": "Escalando" },
+  {
+    "id": "4",
+    "title": "Cómo crear un plan de marketing",
+    "level": "Lanzando"
+  },
+  { "id": "5", "title": "Cómo definir mis metas", "level": "Iniciando" }
+]
