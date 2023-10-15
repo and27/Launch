@@ -11,11 +11,15 @@ import LibraryCard from '../components/LibraryCard';
 import { COLORS } from '../constants/colors';
 import SPACING from '../constants/spacing';
 import TYPOGRAPHY from '../constants/typography';
-const modules = require('../users.json');
+const modules = require('../data/libraryModules.json');
 
 export default function Libary() {
   const [currentFilter, setCurrentFilter] = useState('Popular');
   const filterNames = ['Popular', 'Todos', 'Iniciando', 'Lanzando'];
+  const filteredLibraryModueles = modules.filter(module => {
+    if (currentFilter === 'Todos') return module;
+    else return module.level === currentFilter;
+  });
 
   const handleFilter = filter => {
     setCurrentFilter(filter);
@@ -53,7 +57,7 @@ export default function Libary() {
           </View>
           <FlatList
             style={{ paddingBottom: SPACING.xlarge }}
-            data={modules}
+            data={filteredLibraryModueles}
             renderItem={({ item }) => <LibraryCard item={item} />}
             keyExtractor={item => item.id}
           />
