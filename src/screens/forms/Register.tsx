@@ -5,7 +5,8 @@ import {
   TextInput,
   Text,
   Pressable,
-  Image
+  Image,
+  ActivityIndicator
 } from 'react-native';
 import { Dimensions } from 'react-native';
 import { AuthContext } from '../../context/authContext';
@@ -59,16 +60,16 @@ export default function Register() {
     handleSubmit,
     control,
     watch,
-    formState: { errors }
+    formState: { errors, isSubmitting }
   } = useForm();
 
-  const onSubmit = (formInfo: RegisterFormValues) => {
+  const onSubmit = async (formInfo: RegisterFormValues) => {
     const user = {
       email: formInfo.email,
       password: formInfo.password
     };
 
-    handleSaveData(user);
+    await handleSaveData(user);
   };
 
   const onError: SubmitErrorHandler<RegisterFormValues> = (errors, e) => {
@@ -183,7 +184,9 @@ export default function Register() {
           onPress={handleSubmit(onSubmit, onError)}
           accessibilityLabel="Sign in button"
         >
-          <Text style={styles.btnText}>Continuar</Text>
+          <Text style={styles.btnText}>
+            {isSubmitting ? <ActivityIndicator /> : 'Continuar'}
+          </Text>
         </Pressable>
       </View>
     </ScrollView>

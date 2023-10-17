@@ -3,7 +3,6 @@ import {
   View,
   StyleSheet,
   TextInput,
-  Button,
   Text,
   Pressable,
   Image,

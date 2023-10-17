@@ -6,7 +6,8 @@ import {
   TextInput,
   Text,
   Pressable,
-  SafeAreaView
+  SafeAreaView,
+  ActivityIndicator
 } from 'react-native';
 import { Dimensions } from 'react-native';
 import RNPickerSelect from 'react-native-picker-select';
@@ -20,7 +21,6 @@ import { saveProjectInfo } from '../../utils/supabase';
 import { Area, Objective, Resource } from '../../enums/projectEnums';
 import { COLORS } from '../../constants/colors';
 import SPACING from '../../constants/spacing';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   getUserIdFromLocalStorage,
   storeDataLocally
@@ -30,9 +30,6 @@ const windowWidth = Dimensions.get('window').width;
 export interface IProject {
   idea: string;
   name: string;
-  area: number;
-  objective: number;
-  resources: number;
 }
 
 export default function CreateProject() {
@@ -69,7 +66,7 @@ export default function CreateProject() {
   const {
     handleSubmit,
     control,
-    formState: { errors }
+    formState: { errors, isSubmitting }
   } = useForm();
 
   const onSubmit = (projectData: IProject) => {
@@ -155,99 +152,14 @@ export default function CreateProject() {
           }}
         />
 
-        <Text>Área principal</Text>
-        <Controller
-          control={control}
-          name="area"
-          render={({ field: { onChange, value }, fieldState: { error } }) => (
-            <View style={styles.inputContainer}>
-              <RNPickerSelect
-                value={value}
-                onValueChange={onChange}
-                style={pickerStyles}
-                items={[
-                  { label: 'Educación', value: Area.education },
-                  { label: 'Medio Ambiente', value: Area.ambient },
-                  { label: 'Salud', value: Area.health }
-                ]}
-              />
-
-              {errors.area && (
-                <Text style={styles.errorText}>{error.message}</Text>
-              )}
-            </View>
-          )}
-          rules={{
-            required: 'Selecciona el área principal de tu idea'
-          }}
-        />
-
-        <Text>Objetivo principal</Text>
-        <Controller
-          control={control}
-          name="objective"
-          render={({ field: { onChange, value }, fieldState: { error } }) => (
-            <View style={styles.inputContainer}>
-              <RNPickerSelect
-                value={value}
-                onValueChange={onChange}
-                style={pickerStyles}
-                items={[
-                  { label: 'Crecimiento rápido', value: Objective.growth },
-                  { label: 'Impacto social', value: Objective.social },
-                  {
-                    label: 'Rentabilidad a largo plazo',
-                    value: Objective.profitability
-                  }
-                ]}
-              />
-
-              {errors.objective && (
-                <Text style={styles.errorText}>{error.message}</Text>
-              )}
-            </View>
-          )}
-          rules={{
-            required: 'Selecciona el objetivo que tienes con tu idea'
-          }}
-        />
-
-        <Text>Recursos disponibles</Text>
-        <Controller
-          control={control}
-          name="resources"
-          render={({ field: { onChange, value }, fieldState: { error } }) => (
-            <View style={styles.inputContainer}>
-              <RNPickerSelect
-                value={value}
-                onValueChange={onChange}
-                style={pickerStyles}
-                items={[
-                  {
-                    label: 'Financiamiento propio',
-                    value: Resource.financing
-                  },
-                  { label: 'Tiempo libre', value: Resource.time },
-                  { label: 'Red de contactos', value: Resource.contacts }
-                ]}
-              />
-
-              {errors.resources && (
-                <Text style={styles.errorText}>{error.message}</Text>
-              )}
-            </View>
-          )}
-          rules={{
-            required: 'Selecciona el objetivo que tienes con tu idea'
-          }}
-        />
-
         <Pressable
           style={styles.btn}
           onPress={handleSubmit(onSubmit, onError)}
           accessibilityLabel="Create new project button"
         >
-          <Text style={styles.btnText}>Empezar</Text>
+          <Text style={styles.btnText}>
+            {isSubmitting ? <ActivityIndicator /> : 'Empezar'}
+          </Text>
         </Pressable>
       </ScrollView>
     </SafeAreaView>
