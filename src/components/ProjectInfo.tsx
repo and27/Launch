@@ -13,8 +13,10 @@ export default function ProjectInfo({ currentProject, handleForm }) {
     <View style={styles.container}>
       <Image source={img} style={styles.img} />
       <View style={styles.content}>
-        <Text style={styles.title}>{currentProject?.name}</Text>
-        <Text style={styles.subtitle}>{currentProject?.area}</Text>
+        <Text style={styles.title}>{currentProject?.[0].project_name}</Text>
+        <Text style={styles.subtitle}>
+          Progress: {currentProject?.[0].progress}
+        </Text>
       </View>
       <Pressable style={styles.btn} onPress={handleForm}>
         <Ionicons

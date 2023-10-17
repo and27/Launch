@@ -8,6 +8,7 @@ import {
   SafeAreaView,
   Animated
 } from 'react-native';
+import { useIsFocused } from '@react-navigation/native';
 import { COLORS } from '../constants/colors';
 import { formStyles } from '../globalStyles/forms';
 import { IProject } from './forms/CreateProject';
@@ -17,31 +18,7 @@ import ProjectInfo from '../components/ProjectInfo';
 import SPACING from '../constants/spacing';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ScrollView } from 'react-native-gesture-handler';
-
-const areas = {
-  0: 'Education',
-  1: 'Technology',
-  2: 'Negocios',
-  3: 'Diseño'
-};
-
-const questionnaire = [
-  {
-    id: 1,
-    question: 'Tienes una idea',
-    answer: 'No'
-  },
-  {
-    id: 2,
-    question: '¿Tienes un mvp?',
-    answer: 'No'
-  },
-  {
-    id: 3,
-    question: '¿Has validado tu mvp?',
-    answer: 'No'
-  }
-];
+import { questionnaire } from '../data/initialQuestionnaire';
 
 const bookIcon = require(`../../assets/icons/book.png`);
 const boxIcon = require(`../../assets/icons/box.png`);
@@ -91,6 +68,7 @@ const getProjectInfo = async route => {
 };
 
 const LearningPath = ({ navigation, route }) => {
+  const isFocused = useIsFocused();
   const [currentProject, setCurrentProject] = React.useState<IProject | null>();
 
   useEffect(() => {
@@ -100,7 +78,7 @@ const LearningPath = ({ navigation, route }) => {
     };
 
     getProject();
-  }, [route]);
+  }, [isFocused]);
 
   const el1 = React.useRef(new Animated.Value(0)).current;
   const el2 = React.useRef(new Animated.Value(0)).current;
@@ -179,8 +157,7 @@ const LearningPath = ({ navigation, route }) => {
           <ProjectInfo
             handleForm={handleCreateProject}
             currentProject={{
-              ...currentProject,
-              area: areas[currentProject.area]
+              ...currentProject
             }}
           />
           {learningPath?.map((stage, index) => (

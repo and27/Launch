@@ -12,8 +12,8 @@ export default function App() {
       if (value !== null) {
         return value;
       }
-    } catch (e) {
-      console.log(e);
+    } catch (exception) {
+      console.log(exception);
     }
   };
 
