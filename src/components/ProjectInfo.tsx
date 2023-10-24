@@ -1,6 +1,4 @@
-import { Image, Text, View, StyleSheet, Button, Pressable } from 'react-native';
-import { useNavigation, ParamListBase } from '@react-navigation/native';
-import { StackNavigationProp } from '@react-navigation/stack';
+import { Image, Text, View, StyleSheet, Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { COLORS } from '../constants/colors';
 import TYPOGRAPHY from '../constants/typography';

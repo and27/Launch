@@ -2,15 +2,14 @@ import React, { useRef } from 'react';
 import {
   ScrollView,
   View,
-  StyleSheet,
   TextInput,
   Text,
   Pressable,
   SafeAreaView,
-  ActivityIndicator
+  ActivityIndicator,
+  StyleSheet
 } from 'react-native';
 import { Dimensions } from 'react-native';
-import RNPickerSelect from 'react-native-picker-select';
 import { useForm, Controller, SubmitErrorHandler } from 'react-hook-form';
 import { useNavigation, ParamListBase } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
@@ -18,13 +17,13 @@ import { Ionicons } from '@expo/vector-icons';
 import { formStyles } from '../../globalStyles/forms';
 import { globalStyles } from '../../globalStyles/global';
 import { saveProjectInfo } from '../../utils/supabase';
-import { Area, Objective, Resource } from '../../enums/projectEnums';
 import { COLORS } from '../../constants/colors';
 import SPACING from '../../constants/spacing';
 import {
   getUserIdFromLocalStorage,
   storeDataLocally
 } from '../../utils/asyncStore';
+import RadioGroupInput from '../../components/RadioButtonGroup';
 
 const windowWidth = Dimensions.get('window').width;
 export interface IProject {
@@ -34,6 +33,7 @@ export interface IProject {
 
 export default function CreateProject() {
   const { navigate } = useNavigation<StackNavigationProp<ParamListBase>>();
+
   const handleSaveData = async (projectData: IProject) => {
     const { data: userid, error: useridErr } =
       await getUserIdFromLocalStorage();
@@ -42,7 +42,6 @@ export default function CreateProject() {
     if (!userid) return console.error('Ha ocurrido un error con el usuario');
 
     const dataToSend = {
-      project_description: projectData.idea,
       project_name: projectData.name,
       ...projectData,
       user_id: userid
@@ -98,35 +97,7 @@ export default function CreateProject() {
           (scrollViewRef.current as any).scrollToEnd({ animated: true });
         }}
       >
-        <Text>Cuéntanos tu idea</Text>
-        <Controller
-          control={control}
-          name="idea"
-          render={({
-            field: { onChange, onBlur, value },
-            fieldState: { error }
-          }) => (
-            <View style={styles.inputContainer}>
-              <TextInput
-                style={styles.inputTextArea}
-                onBlur={onBlur}
-                placeholder="Voy a crear ..."
-                value={value}
-                onChangeText={onChange}
-                multiline={true}
-                numberOfLines={4}
-              />
-              {errors.idea && (
-                <Text style={styles.errorText}>{error.message}</Text>
-              )}
-            </View>
-          )}
-          rules={{
-            required: 'Ingresa tu idea'
-          }}
-        />
-
-        <Text>Dale un nombre</Text>
+        <Text>Dale un nombre a tu proyecto</Text>
         <Controller
           control={control}
           name="name"
@@ -149,6 +120,76 @@ export default function CreateProject() {
           )}
           rules={{
             required: 'Ingresa el nombre de tu idea'
+          }}
+        />
+        <Text style={styles.question}>¿Tienes una idea de negocio?</Text>
+        <Controller
+          control={control}
+          name="questionIdea"
+          render={({ field: { onChange, value }, fieldState: { error } }) => (
+            <View style={styles.inputContainer}>
+              <RadioGroupInput onChange={onChange} selected={value} />
+              {errors.questionIdea && (
+                <Text style={styles.errorText}>{error.message}</Text>
+              )}
+            </View>
+          )}
+          rules={{
+            required: 'Selecciona una respuesta'
+          }}
+        />
+
+        <Text style={styles.question}>
+          ¿Has definido cómo tu idea generará ingresos?
+        </Text>
+        <Controller
+          control={control}
+          name="questionConcept"
+          render={({ field: { onChange, value }, fieldState: { error } }) => (
+            <View style={styles.inputContainer}>
+              <RadioGroupInput onChange={onChange} selected={value} />
+              {errors.questionConcept && (
+                <Text style={styles.errorText}>{error.message}</Text>
+              )}
+            </View>
+          )}
+          rules={{
+            required: 'Selecciona una respuesta'
+          }}
+        />
+        <Text style={styles.question}>¿Tienes un prototipo de tu idea? </Text>
+        <Controller
+          control={control}
+          name="questionMVP"
+          render={({ field: { onChange, value }, fieldState: { error } }) => (
+            <View style={styles.inputContainer}>
+              <RadioGroupInput onChange={onChange} selected={value} />
+              {errors.questionMVP && (
+                <Text style={styles.errorText}>{error.message}</Text>
+              )}
+            </View>
+          )}
+          rules={{
+            required: 'Selecciona una respuesta'
+          }}
+        />
+
+        <Text style={styles.question}>
+          ¿Has presentado el prototipo a tus primeros clientes?
+        </Text>
+        <Controller
+          control={control}
+          name="questionClients"
+          render={({ field: { onChange, value }, fieldState: { error } }) => (
+            <View style={styles.inputContainer}>
+              <RadioGroupInput onChange={onChange} selected={value} />
+              {errors.questionClients && (
+                <Text style={styles.errorText}>{error.message}</Text>
+              )}
+            </View>
+          )}
+          rules={{
+            required: 'Selecciona una respuesta'
           }}
         />
 
@@ -223,6 +264,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     height: '100%',
     backgroundColor: COLORS.primaryWhite
+  },
+
+  question: {
+    marginBottom: SPACING.small
   }
 });
 
