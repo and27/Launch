@@ -19,6 +19,7 @@ import SPACING from '../constants/spacing';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ScrollView } from 'react-native-gesture-handler';
 import { questionnaire } from '../data/initialQuestionnaire';
+import { useFonts } from 'expo-font';
 
 const bookIcon = require(`../../assets/icons/book.png`);
 const boxIcon = require(`../../assets/icons/box.png`);
@@ -68,6 +69,10 @@ const getProjectInfo = async route => {
 };
 
 const LearningPath = ({ navigation, route }) => {
+  const [fontsLoaded] = useFonts({
+    vegan: require('../../assets/fonts/vegan.ttf'),
+    inter: require('../../assets/fonts/Inter-ExtraBoldItalic.otf')
+  });
   const isFocused = useIsFocused();
   const [currentProject, setCurrentProject] = React.useState<IProject | null>();
 
@@ -220,16 +225,19 @@ const styles = StyleSheet.create({
   subtitle: {
     textAlign: 'center',
     fontSize: TYPOGRAPHY.smallTitle,
+    fontFamily: 'vegan',
     letterSpacing: -0.1,
     fontWeight: '700',
-    marginBottom: SPACING.base,
-    color: COLORS.primaryBlack
+    // marginBottom: SPACING.base,
+    color: '#bbb'
   },
 
   description: {
     fontSize: TYPOGRAPHY.baseText,
-    marginBottom: SPACING.large,
-    color: COLORS.darkGrey
+    // marginBottom: SPACING.large,
+    fontFamily: 'inter',
+    fontWeight: '900',
+    color: '#ccc'
   },
 
   learningStage: {
@@ -299,8 +307,8 @@ const styles = StyleSheet.create({
   newProjectImg: {
     width: 64,
     height: 64,
-    borderRadius: 50,
-    marginBottom: SPACING.medium
+    borderRadius: 50
+    // marginBottom: SPACING.medium
   }
 });
 export default LearningPath;

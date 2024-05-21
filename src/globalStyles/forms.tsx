@@ -35,7 +35,7 @@ export const formStyles = StyleSheet.create({
   },
 
   btnPrimaryText: {
-    color: COLORS.primaryWhite,
+    color: COLORS.lightGrey,
     fontSize: TYPOGRAPHY.smallTitle
   },
 

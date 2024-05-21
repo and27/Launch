@@ -41,6 +41,8 @@ export default function CreateProject() {
 
     if (!userid) return console.error('Ha ocurrido un error con el usuario');
 
+    //todo: instaead of sending project data, rename here or in supabase util
+    //for instance questionIdea -> question_idea (according to database column name)
     const dataToSend = {
       project_name: projectData.name,
       ...projectData,
