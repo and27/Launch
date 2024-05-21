@@ -3,6 +3,7 @@ import Navigation from './src/screens/Tabs';
 import { useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { AuthProvider } from './src/context/authContext';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 export default function App() {
   const [isSignedIn, setIsSignedIn] = useState(false);
@@ -32,10 +33,12 @@ export default function App() {
 
   return (
     <>
-      <AuthProvider>
-        <StatusBar style="dark" />
-        <Navigation isSignedIn={isSignedIn} />
-      </AuthProvider>
+      <GestureHandlerRootView style={{ flex: 1 }}>
+        <AuthProvider>
+          <StatusBar style="dark" />
+          <Navigation isSignedIn={isSignedIn} />
+        </AuthProvider>
+      </GestureHandlerRootView>
     </>
   );
 }
