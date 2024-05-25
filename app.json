@@ -15,16 +15,24 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.and277.launch"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.and277.Cproject"
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+   
+    "extra": {
+      "eas": {
+        "projectId": "179229ef-fdd0-4cf9-8948-3d643d82b134"
+      }
     }
   }
 }
