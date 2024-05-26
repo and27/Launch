@@ -11,7 +11,7 @@ export default function ProjectInfo({ currentProject, handleForm }) {
     <View style={styles.container}>
       <Image source={img} style={styles.img} />
       <View style={styles.content}>
-        <Text style={styles.title}>{currentProject?.[0].project_name}</Text>
+        <Text style={styles.title}>{currentProject?.[0].name}</Text>
         <Text style={styles.subtitle}>
           Progress: {currentProject?.[0].progress}
         </Text>

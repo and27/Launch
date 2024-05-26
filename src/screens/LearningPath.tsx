@@ -20,40 +20,20 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ScrollView } from 'react-native-gesture-handler';
 import { questionnaire } from '../data/initialQuestionnaire';
 
-const bookIcon = require(`../../assets/icons/book.png`);
+const hammerIcon = require(`../../assets/icons/hammer.png`);
 const boxIcon = require(`../../assets/icons/box.png`);
+const glassIcon = require(`../../assets/icons/glass.png`);
+const bulbIcon = require(`../../assets/icons/bulb.png`);
+const cartIcon = require(`../../assets/icons/cart.png`);
 const graphIcon = require(`../../assets/icons/graph.png`);
-const lightIcon = require(`../../assets/icons/light.png`);
-const mapIcon = require(`../../assets/icons/map.png`);
-const userIcon = require(`../../assets/icons/user.png`);
-const megaphoneIcon = require(`../../assets/icons/megaphone.png`);
-
-const bookBlackIcon = require(`../../assets/icons/bookBlack.png`);
-const boxBlackIcon = require(`../../assets/icons/boxBlack.png`);
-const graphBlackIcon = require(`../../assets/icons/graphBlack.png`);
-const lightBlackIcon = require(`../../assets/icons/lightBlack.png`);
-const mapBlackIcon = require(`../../assets/icons/mapBlack.png`);
-const userBlackIcon = require(`../../assets/icons/userBlack.png`);
-const megaphoneBlackIcon = require(`../../assets/icons/megaphoneBlack.png`);
 
 const iconsMap = {
-  ideas: lightIcon,
-  evaluation: graphIcon,
-  concept: bookIcon,
+  ideas: bulbIcon,
+  evaluation: glassIcon,
+  concept: hammerIcon,
   mvp: boxIcon,
-  map: mapIcon,
-  user: userIcon,
-  megaphone: megaphoneIcon
-};
-
-const iconsBlackMap = {
-  ideas: lightBlackIcon,
-  evaluation: graphBlackIcon,
-  concept: bookBlackIcon,
-  mvp: boxBlackIcon,
-  map: mapBlackIcon,
-  user: userBlackIcon,
-  megaphone: megaphoneBlackIcon
+  mvpLaunch: graphIcon,
+  businessModel: cartIcon
 };
 
 const getProjectInfo = async route => {
@@ -98,10 +78,7 @@ const LearningPath = ({ navigation, route }) => {
   };
 
   const getImageSrc = stage => {
-    const isCompleted = userProgress[stage.name] === 1;
-    const img = isCompleted ? iconsMap[stage.name] : iconsBlackMap[stage.name];
-    if (!img) return iconsBlackMap['ideas'];
-    return img;
+    return iconsMap[stage.name];
   };
 
   const handleSelectStage = stage => {
@@ -135,16 +112,22 @@ const LearningPath = ({ navigation, route }) => {
     Animated.stagger(200, animatable).start();
   }, [currentProject]);
 
+  const dots = [];
+  for (let i = 0; i < 7; i++) {
+    dots.push(<View key={i} style={styles.dot} />);
+  }
+
   if (!currentProject)
     return (
       <View style={styles.newProjectContainer}>
         <Image source={iconsMap['ideas']} style={styles.newProjectImg} />
-        <Text style={styles.subtitle}>¿Tienes una nueva idea en mente?</Text>
+        <Text style={styles.subtitle}>Lleva tu idea al siguiente nivel</Text>
         <Text style={styles.description}>
-          Crea un nuevo proyecto paso a paso.
+          Empieza a construir tu startup ahora. Sigue nuestros pasos y mira cómo
+          tu idea se convierte en un proyecto exitoso.
         </Text>
         <Pressable style={styles.btn} onPress={handleCreateProject}>
-          <Text style={formStyles.btnPrimaryText}>Crea un nuevo proyecto</Text>
+          <Text style={formStyles.btnPrimaryText}>Iniciar ahora</Text>
         </Pressable>
       </View>
     );
@@ -179,10 +162,14 @@ const LearningPath = ({ navigation, route }) => {
                 key={index}
                 onPress={() => handleSelectStage(stage)}
               >
-                <Image
-                  source={getImageSrc(stage)}
-                  style={styles.moduleImg}
-                ></Image>
+                <View style={styles.dotContainer}>{dots}</View>
+
+                <View style={styles.moduleImgContainer}>
+                  <Image
+                    source={getImageSrc(stage)}
+                    style={styles.moduleImg}
+                  ></Image>
+                </View>
                 <Text style={getStageTitleStyle(stage)}>{stage.title}</Text>
               </Pressable>
             </Animated.View>
@@ -194,13 +181,33 @@ const LearningPath = ({ navigation, route }) => {
 };
 
 const styles = StyleSheet.create({
+  dotContainer: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 4,
+    position: 'absolute',
+    left: 24,
+    opacity: 0.5
+  },
+
+  dot: {
+    width: 1,
+    top: 20,
+    height: 5,
+    backgroundColor: 'black',
+    marginBottom: 2,
+    opacity: 1
+  },
+
   newProjectContainer: {
     backgroundColor: COLORS.primaryWhite,
-    padding: SPACING.medium,
     minHeight: '100%',
     display: 'flex',
     justifyContent: 'center',
-    alignItems: 'center'
+    alignItems: 'center',
+    paddingHorizontal: SPACING.medium
   },
 
   container: {
@@ -218,18 +225,20 @@ const styles = StyleSheet.create({
   },
 
   subtitle: {
-    textAlign: 'center',
-    fontSize: TYPOGRAPHY.smallTitle,
-    letterSpacing: -0.1,
+    textAlign: 'left',
+    fontSize: TYPOGRAPHY.title,
     fontWeight: '700',
     marginBottom: SPACING.base,
-    color: COLORS.primaryBlack
+    color: COLORS.primaryBlack,
+    width: '100%',
+    lineHeight: 30
   },
 
   description: {
     fontSize: TYPOGRAPHY.baseText,
     marginBottom: SPACING.large,
-    color: COLORS.darkGrey
+    color: COLORS.darkGrey,
+    width: '100%'
   },
 
   learningStage: {
@@ -239,13 +248,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: SPACING.medium,
-    shadowRadius: 0,
-    elevation: 1,
-    borderColor: '#e5e5e5',
-    borderBottomWidth: 1,
     backgroundColor: COLORS.primaryWhite,
     paddingBottom: SPACING.medium,
-    marginTop: SPACING.base
+    marginTop: SPACING.base,
+    position: 'relative'
   },
 
   learningUnitTitle: {
@@ -290,10 +296,20 @@ const styles = StyleSheet.create({
     marginBottom: 24
   },
 
-  moduleImg: {
+  moduleImgContainer: {
     width: 48,
     height: 48,
-    borderRadius: 50
+    borderRadius: 50,
+    backgroundColor: COLORS.primaryPurple,
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    position: 'relative'
+  },
+
+  moduleImg: {
+    width: 24,
+    height: 24
   },
 
   newProjectImg: {

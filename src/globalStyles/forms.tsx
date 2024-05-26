@@ -7,7 +7,7 @@ const baseButton: any = {
   alignItems: 'center',
   justifyContent: 'center',
   height: 40,
-  borderRadius: 4
+  borderRadius: 8
 };
 
 export const formStyles = StyleSheet.create({
