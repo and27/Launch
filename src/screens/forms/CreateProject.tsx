@@ -16,7 +16,7 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { Ionicons } from '@expo/vector-icons';
 import { formStyles } from '../../globalStyles/forms';
 import { globalStyles } from '../../globalStyles/global';
-import { saveProjectInfo } from '../../utils/supabase';
+import { saveProjectInfo, saveProjectSurvey } from '../../utils/supabase';
 import { COLORS } from '../../constants/colors';
 import SPACING from '../../constants/spacing';
 import {
@@ -27,40 +27,57 @@ import RadioGroupInput from '../../components/RadioButtonGroup';
 
 const windowWidth = Dimensions.get('window').width;
 export interface IProject {
-  idea: string;
   name: string;
+}
+
+export interface IProjectSurvey {
+  idea: string;
+  concept: string;
+  mvp: string;
+  clients: string;
 }
 
 export default function CreateProject() {
   const { navigate } = useNavigation<StackNavigationProp<ParamListBase>>();
 
-  const handleSaveData = async (projectData: IProject) => {
-    const { data: userid, error: useridErr } =
+  const handleSaveData = async projectData => {
+    const { error: useridErr, data: userid } =
       await getUserIdFromLocalStorage();
-    if (useridErr) return console.error(useridErr);
 
+    if (useridErr) return console.error(useridErr);
     if (!userid) return console.error('Ha ocurrido un error con el usuario');
 
-    //todo: instaead of sending project data, rename here or in supabase util
-    //for instance questionIdea -> question_idea (according to database column name)
-    const dataToSend = {
-      project_name: projectData.name,
-      ...projectData,
+    const projectInfo = {
+      name: projectData.name,
       user_id: userid
     };
-    delete dataToSend.name;
-    delete dataToSend.idea;
 
-    const { error, data } = await saveProjectInfo(dataToSend);
-    if (error) console.error(error);
+    const { error: projectErr, data: project } = await saveProjectInfo(
+      projectInfo
+    );
+    if (projectErr) console.error(projectErr);
+
+    const projectSurvey = {
+      idea: projectData.questionIdea,
+      concept: projectData.questionConcept,
+      mvp: projectData.questionMvp,
+      mvp_launch: projectData.questionMvpLaunch,
+      project: project[0].id
+    };
+
+    console.log(projectSurvey);
+
+    const { error: errorSurvey } = await saveProjectSurvey(projectSurvey);
+    if (errorSurvey) console.error(errorSurvey);
 
     await storeDataLocally({
       key: 'project',
-      value: JSON.stringify(data)
+      value: JSON.stringify(project)
     });
+
     setIsSucessForm(true);
     setTimeout(() => {
-      navigate('Roadmap', data);
+      navigate('Roadmap', { project, name: projectData.name });
     }, 1500);
   };
 
@@ -70,7 +87,7 @@ export default function CreateProject() {
     formState: { errors, isSubmitting }
   } = useForm();
 
-  const onSubmit = (projectData: IProject) => {
+  const onSubmit = (projectData: IProject & IProjectSurvey) => {
     handleSaveData(projectData);
   };
 
@@ -162,11 +179,11 @@ export default function CreateProject() {
         <Text style={styles.question}>¿Tienes un prototipo de tu idea? </Text>
         <Controller
           control={control}
-          name="questionMVP"
+          name="questionMvp"
           render={({ field: { onChange, value }, fieldState: { error } }) => (
             <View style={styles.inputContainer}>
               <RadioGroupInput onChange={onChange} selected={value} />
-              {errors.questionMVP && (
+              {errors.questionMvp && (
                 <Text style={styles.errorText}>{error.message}</Text>
               )}
             </View>
@@ -181,11 +198,11 @@ export default function CreateProject() {
         </Text>
         <Controller
           control={control}
-          name="questionClients"
+          name="questionMvpLaunch"
           render={({ field: { onChange, value }, fieldState: { error } }) => (
             <View style={styles.inputContainer}>
               <RadioGroupInput onChange={onChange} selected={value} />
-              {errors.questionClients && (
+              {errors.questionMvpLaunch && (
                 <Text style={styles.errorText}>{error.message}</Text>
               )}
             </View>
